@@ -1,6 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
-import { join } from 'path'
-import { readdir } from 'fs'
+import { join, extname } from 'path'
+import { readdir, statSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
@@ -14,7 +14,8 @@ function createWindow() {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      nodeIntegration: true
     }
   })
 
@@ -58,13 +59,45 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 
-  ipcMain.handle('dialog', async (e, params) => {       
-    return dialog.showOpenDialogSync(params);
-  });
+  ipcMain.handle('dialog', async (e, params) => {
+    return dialog.showOpenDialogSync(params)
+  })
 
-  ipcMain.handle('readdir', async (e, path) => {       
-    return readdir(path);
-  });
+  /**
+   * atime: the last time this file was accessed expressed in milliseconds since the POSIX Epoch
+      mtime: the last time this file was modified ...
+      ctime: the last time the file status was changed ...
+      birthtime: the creation time of this file
+   */
+
+  ipcMain.handle('readdir', async (e, filePath) => {
+    return new Promise((resolve, reject) => {
+      readdir(filePath, (err, foundFiles) => {
+        if (err) {
+          reject({
+            error: err
+          })
+        } else {
+          const fileStruct = foundFiles.map((fileName) => {
+            const fullPath = join(filePath, fileName)
+            const stats = statSync(fullPath)
+            return {
+              fileFullPath: fullPath,
+              fileDirName: filePath,
+              fileName: fileName,
+              fileExtName: extname(fileName),
+              accessTime: stats.atime,
+              changeTime: stats.ctime,
+              modifiedTime: stats.mtime,
+              createdTime: stats.birthtime,
+            }
+          })
+
+          resolve(fileStruct)
+        }
+      })
+    })
+  })
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common

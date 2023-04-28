@@ -22,9 +22,10 @@ function App() {
       {/* Right Group */}
       <div className="flex flex-col flex-1 gap-4">
         <div className="flex h-[75px] island justify-start items-center">
+        </div>
+        <div className="flex flex-1 overflow-y-auto paragraph island">
           <FileDialog/>
         </div>
-        <div className="flex flex-1 overflow-y-auto paragraph island"></div>
       </div>
     </div>
   )

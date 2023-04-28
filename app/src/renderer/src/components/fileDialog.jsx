@@ -11,14 +11,14 @@ const FileDialog = () => {
         buttonLabel: 'Select',
         properties: ['openDirectory', 'multiSelections']
       })
-      console.log(result);
+      console.log(result)
       for (let path of result) {
-        console.log(path);
+        console.log(path)
       }
       if (result) {
-          setSelectedDir(result[0]);
-          const files = await getFilesInDirectory(result[0]);
-          setFileList(files);
+        setSelectedDir(result[0])
+        const files = await getFilesInDirectory(result[0])
+        setFileList(files)
       }
     } catch (err) {
       console.error(err)
@@ -28,9 +28,10 @@ const FileDialog = () => {
   const getFilesInDirectory = async (dirPath) => {
     try {
       const files = await window.api.readdir(dirPath)
-      return files.filter((file) => {
-        return ['.mp4', '.avi', '.mov'].includes(file.slice(-4))
-      })
+      return files
+      //   .filter((file) => {
+      //     return ['.mp4', '.avi', '.mov'].includes(file.slice(-4))
+      //   })
     } catch (err) {
       console.error(err)
     }
@@ -51,9 +52,11 @@ const FileDialog = () => {
         <div>
           <h2>Files:</h2>
           <ul>
-            {fileList.map((file, index) => (
-              <li key={index}>{file}</li>
-            ))}
+            <pre>
+              {fileList.map((file, index) => (
+                <li key={index}>{JSON.stringify(file, null, 2)}</li>
+              ))}
+            </pre>
           </ul>
         </div>
       )}
