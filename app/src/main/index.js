@@ -1,5 +1,6 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
+import { readdir } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
@@ -56,6 +57,14 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+  ipcMain.handle('dialog', async (e, params) => {       
+    return dialog.showOpenDialogSync(params);
+  });
+
+  ipcMain.handle('readdir', async (e, path) => {       
+    return readdir(path);
+  });
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common

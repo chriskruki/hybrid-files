@@ -14,5 +14,9 @@ body {
 }
 
 .island {
-  @apply shadow-xl rounded-xl bg-slate-600 p-4;
+  @apply rounded-xl bg-slate-600 p-4 border-2 border-slate-500;
+}
+
+.btn {
+  @apply rounded font-bold border border-slate-500 hover:border-slate-400 text-slate-300 hover:text-slate-100  transition-all;
 }
