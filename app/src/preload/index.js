@@ -4,7 +4,8 @@ import { electronAPI } from '@electron-toolkit/preload';
 // Custom APIs for renderer
 const api = {
   openDialog: (properties) => ipcRenderer.invoke('dialog', properties),
-  readdir: (path) => ipcRenderer.invoke('readdir', path)
+  readdir: (path) => ipcRenderer.invoke('readdir', path),
+  sqlBridge: (command, payload) => ipcRenderer.invoke('sqlBridge', command, payload)
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

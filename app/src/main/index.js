@@ -2,6 +2,7 @@ import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join, extname } from 'path'
 import { readdir, statSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { sqlBridge } from './sqlBridge'
 import icon from '../../resources/icon.png?asset'
 
 function createWindow() {
@@ -41,12 +42,8 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
@@ -63,13 +60,6 @@ app.whenReady().then(() => {
     const resPromise = dialog.showOpenDialogSync(params)
     return resPromise
   })
-
-  /**
-   * atime: the last time this file was accessed expressed in milliseconds since the POSIX Epoch
-      mtime: the last time this file was modified ...
-      ctime: the last time the file status was changed ...
-      birthtime: the creation time of this file
-   */
 
   ipcMain.handle('readdir', async (e, filePath) => {
     return new Promise((resolve, reject) => {
@@ -90,14 +80,20 @@ app.whenReady().then(() => {
               accessTime: stats.atime,
               changeTime: stats.ctime,
               modifiedTime: stats.mtime,
-              createdTime: stats.birthtime,
+              createdTime: stats.birthtime
             }
           })
-
           resolve(fileStruct)
         }
       })
     })
+  })
+
+  ipcMain.handle('sqlBridge', async (e, command, payload) => {
+    switch (command) {
+      case 'validateUser':
+        return sqlBridge.validateUser(payload)
+    }
   })
 })
 
@@ -109,6 +105,3 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
