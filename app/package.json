@@ -20,7 +20,11 @@
   "dependencies": {
     "@electron-toolkit/preload": "^1.0.3",
     "@electron-toolkit/utils": "^1.0.2",
-    "@mysql/xdevapi": "^8.0.33"
+    "@fortawesome/fontawesome-svg-core": "^6.4.0",
+    "@fortawesome/free-solid-svg-icons": "^6.4.0",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "font-awesome": "^4.7.0",
+    "mysql": "^2.18.1"
   },
   "devDependencies": {
     "@electron/notarize": "^1.2.3",

@@ -90,10 +90,7 @@ app.whenReady().then(() => {
   })
 
   ipcMain.handle('sqlBridge', async (e, command, payload) => {
-    switch (command) {
-      case 'validateUser':
-        return sqlBridge.validateUser(payload)
-    }
+    return sqlBridge[command](payload)
   })
 })
 
