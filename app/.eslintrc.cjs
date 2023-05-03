@@ -21,5 +21,7 @@ module.exports = {
   ],
   rules: {
     'prettier/prettier': 0,
-  },
+    'react/prop-types': 0,
+    'no-unused-vars': 0
+  }
 }

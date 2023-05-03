@@ -60,7 +60,8 @@ app.whenReady().then(() => {
   })
 
   ipcMain.handle('dialog', async (e, params) => {
-    return dialog.showOpenDialogSync(params)
+    const resPromise = dialog.showOpenDialogSync(params)
+    return resPromise
   })
 
   /**

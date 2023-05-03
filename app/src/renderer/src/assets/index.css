@@ -20,3 +20,8 @@ body {
 .btn {
   @apply rounded font-bold border border-slate-500 hover:border-slate-400 text-slate-300 hover:text-slate-100  transition-all;
 }
+
+.btn.selected {
+  @apply bg-sky-600
+}
+

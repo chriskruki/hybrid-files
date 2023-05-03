@@ -6,18 +6,16 @@ const FileDialog = () => {
 
   const handleOpenDialog = async () => {
     try {
-      const result = await window.api.openDialog({
+      const params = {
         title: 'Select a media folder',
         buttonLabel: 'Select',
         properties: ['openDirectory', 'multiSelections']
-      })
-      console.log(result)
-      for (let path of result) {
-        console.log(path)
       }
-      if (result) {
-        setSelectedDir(result[0])
-        const files = await getFilesInDirectory(result[0])
+      const selectedDirs = await window.api.openDialog(params)
+      console.log(selectedDirs)
+      if (selectedDirs) {
+        setSelectedDir(selectedDirs[0])
+        const files = await getFilesInDirectory(selectedDirs[0])
         setFileList(files)
       }
     } catch (err) {
