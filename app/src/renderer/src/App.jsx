@@ -7,7 +7,7 @@ import ProvidersPage from './pages/ProvidersPage'
 import JobsPage from './pages/JobsPage'
 
 function App() {
-  const [currPage, setCurrPage] = useState(PAGES.FILES)
+  const [currPage, setCurrPage] = useState(PAGES.LOGIN)
   return (
     <Fragment>
       <LoginPage currPage={currPage} setCurrPage={setCurrPage} />
