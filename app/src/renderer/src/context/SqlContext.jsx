@@ -14,7 +14,7 @@ export function SqlSettingsProvider({ children }) {
     connected: false,
     status: 'Not Initialized',
     username: 'root',
-    password: '',
+    password: 'cpsc408',
     resMsg: ''
   })
 

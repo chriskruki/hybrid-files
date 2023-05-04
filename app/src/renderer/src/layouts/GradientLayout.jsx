@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGear, faL } from '@fortawesome/free-solid-svg-icons'
 import Modal from '../components/Modal'
 import { useSqlSettings, useSqlSettingsUpdate } from '../context/SqlContext'
+import { useEffect } from 'react'
 
 export default function GradientLayout({ children }) {
   const sqlSettings = useSqlSettings()
@@ -9,7 +10,7 @@ export default function GradientLayout({ children }) {
 
   // Request MySQL Connection using credentials
   const requestConnection = (e) => {
-    e.preventDefault()
+    if (e) e.preventDefault()
     updateSqlSettings('resMsg', 'Attempting to connect')
     updateSqlSettings('connected', false)
     try {
@@ -35,7 +36,11 @@ export default function GradientLayout({ children }) {
   const statusTextColor = sqlSettings.connected ? 'text-green-400' : 'text-red-400'
   const statusBgColor = sqlSettings.connected ? 'bg-green-700' : 'bg-red-700'
 
-  const content = (
+  useEffect(() => {
+    requestConnection()
+  }, [])
+
+  const settingsContent = (
     <form onSubmit={requestConnection}>
       <div className="flex flex-col gap-2 justify-center items-center">
         {/* Username */}
@@ -80,13 +85,21 @@ export default function GradientLayout({ children }) {
             }}
           />
         </div>
+        {/* Show Password */}
+        {/* <div className="btn w-full flex gap-2 justify-center">
+          <input id="showpass" type="checkbox" className="border-gray-600 bg-gray-600" />
+          <label htmlFor="showpass">Show Password</label>
+        </div> */}
         <button type="submit" className="fbtn p-2 w-full">
           {sqlSettings.connected ? 'Refresh' : 'Connect'}
         </button>
-        <div className={`btn w-full flex justify-center items-center text-center ${statusBgColor}`}>
+
+        <div
+          className={`btn w-full flex justify-center items-center text-center m-0 ${statusBgColor}`}
+        >
           <h1>{sqlSettings.status}</h1>
         </div>
-        <h1 className={`${statusTextColor} overflow-auto max-w-[200px] text-center`}>
+        <h1 className={`${statusTextColor} overflow-auto max-w-[200px] m-0 text-center`}>
           {sqlSettings.resMsg}
         </h1>
       </div>
@@ -94,8 +107,8 @@ export default function GradientLayout({ children }) {
   )
 
   return (
-    <div className={`w-full h-full flex flex-col bg-gradient-to-t from-sky-600 to-sky-800`}>
-      <div className="flex-1">{children}</div>
+    <div className="w-full h-full flex flex-col bg-gradient-to-t from-sky-600 to-sky-800">
+      <div className="flex-1 flex p-4 gap-4 h-full">{children}</div>
       {/* Bottom Bar */}
       <div className="w-full h-[35px] bg-gray-800 flex justify-end items-center text-s">
         {/* SQL Status */}
@@ -105,7 +118,7 @@ export default function GradientLayout({ children }) {
           {sqlSettings.connected ? 'MySQL Server connected' : 'MySQL Server disconnected'}
         </div>
         {/* Gear Modal Toggle */}
-        <Modal title={'MySQL Settings'} content={content}>
+        <Modal title={'MySQL Settings'} content={settingsContent}>
           {(toggleOpen) => (
             <div
               onClick={toggleOpen}

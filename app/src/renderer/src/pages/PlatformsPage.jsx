@@ -3,8 +3,8 @@ import NavBar from '../components/NavBar'
 import Logo from '../components/logo'
 import { PAGES } from '../utils/constants'
 
-export default function ProvidersPage({ currPage, setCurrPage }) {
-  const pageVisible = currPage === PAGES.PROVIDERS
+export default function PlatformsPage({ currPage, setCurrPage }) {
+  const pageVisible = currPage === PAGES.PLATFORMS
   return (
     pageVisible && (
       <Fragment>

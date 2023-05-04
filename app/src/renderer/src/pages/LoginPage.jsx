@@ -3,10 +3,12 @@ import { PAGES } from '../utils/constants'
 
 export default function LoginPage({ currPage, setCurrPage }) {
   const pageVisible = currPage === PAGES.LOGIN
+  const [resMsg, setResMsg] = useState('')
   const [userInfo, setUserInfo] = useState({
     username: '',
     password: ''
   })
+
   const updateUserInfo = (key, val) => {
     if (!(key in userInfo)) {
       console.error(`Key [${key}] error in userInfo update`)
@@ -18,7 +20,7 @@ export default function LoginPage({ currPage, setCurrPage }) {
       }
     })
   }
-  const [resMsg, setResMsg] = useState('')
+
   const onLogin = async (e) => {
     e.preventDefault()
     const payload = {
@@ -29,7 +31,7 @@ export default function LoginPage({ currPage, setCurrPage }) {
       .sqlBridge('validateUser', payload)
       .then((res) => {
         if (res.success) {
-          setCurrPage(PAGES.LOGIN)
+          setCurrPage(PAGES.FILES)
           setResMsg('Login Success')
         } else {
           setResMsg('Login Failed')
@@ -43,7 +45,7 @@ export default function LoginPage({ currPage, setCurrPage }) {
     pageVisible && (
       <div className="flex flex-col w-full h-full justify-center items-center">
         <div className="island justify-center items-center">
-          <form className="space-y-4 md:space-y-6" action="#" onSubmit={onLogin}>
+          <form className="space-y-6" action="#" onSubmit={onLogin}>
             {/* Username */}
             <div>
               <label
@@ -93,10 +95,12 @@ export default function LoginPage({ currPage, setCurrPage }) {
             >
               Sign in
             </button>
-            <p className="text-sm text-center text-red-500">{resMsg}</p>
-            <p className="text-sm text-center font-light text-gray-500 m-1 ">
-              No account? Ask daddy admin
-            </p>
+            <div>
+              <p className="text-sm text-center text-red-500">{resMsg}</p>
+              <p className="text-sm text-center font-light text-gray-300">
+                No account? Ask daddy admin
+              </p>
+            </div>
           </form>
           {`${userInfo.username} ${userInfo.password}`}
         </div>
