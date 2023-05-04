@@ -31,8 +31,12 @@ export default function LoginPage({ currPage, setCurrPage }) {
       .sqlBridge('validateUser', payload)
       .then((res) => {
         if (res.success) {
+          // Set page to Files
           setCurrPage(PAGES.FILES)
-          setResMsg('Login Success')
+          // Clear vars in case user logs out
+          setResMsg('')
+          updateUserInfo('username', '')
+          updateUserInfo('password', '')
         } else {
           setResMsg('Login Failed')
         }

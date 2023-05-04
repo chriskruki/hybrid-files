@@ -1,1 +1,0 @@
-// Bridge from Front-end to Main Renderer

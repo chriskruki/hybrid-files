@@ -3,8 +3,8 @@ import NavBar from '../components/NavBar'
 import Logo from '../components/logo'
 import { PAGES } from '../utils/constants'
 
-export default function FilesPage({ currPage, setCurrPage }) {
-  const pageVisible = currPage === PAGES.FILES
+export default function UsersPage({ currPage, setCurrPage }) {
+  const pageVisible = currPage === PAGES.USERS
   return (
     pageVisible && (
       <Fragment>
