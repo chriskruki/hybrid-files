@@ -11,10 +11,12 @@ export function useSqlSettingsUpdate() {
 }
 export function SqlSettingsProvider({ children }) {
   const [sqlSettings, setSqlSettings] = useState({
-    connected: false,
-    status: 'Not Initialized',
     username: 'root',
     password: 'cpsc408',
+    host: 'localhost',
+    database: 'hybridfiles',
+    connected: false,
+    status: 'Not Initialized',
     resMsg: ''
   })
 

@@ -11,10 +11,11 @@ export const sqlBridge = {
       try {
         // Attempt to make connection
         const con = mysql.createConnection({
-          host: 'localhost',
-          database: 'hybridfiles',
+          host: payload.host,
+          database: payload.database,
           user: payload.username,
-          password: payload.password
+          password: payload.password,
+          timezone: 'utc'
         })
 
         // On connect event
@@ -111,6 +112,66 @@ export const sqlBridge = {
             res = {
               success: true,
               data: data
+            }
+          }
+          resolve(res)
+        })
+      } catch (e) {
+        reject(e.message)
+      }
+    })
+  },
+  insertPlatform: async (payload) => {
+    return new Promise((resolve, reject) => {
+      if (!bridge.connected) {
+        reject('Connection not established!')
+      }
+      try {
+        const query = `
+          INSERT INTO platform (\`name\`, \`type\`, \`schema\`, status)
+          VALUES ('${payload.name}', '${payload.type}', '${payload.schema}', '${payload.status}');
+        `
+        bridge.con.query(query, (err, data) => {
+          var res
+          if (err) {
+            console.log(err.message)
+            res = {
+              success: false,
+              errMsg: err.message
+            }
+          } else {
+            res = {
+              success: true,
+            }
+          }
+          resolve(res)
+        })
+      } catch (e) {
+        reject(e.message)
+      }
+    })
+  },
+  deletePlatform: async (payload) => {
+    return new Promise((resolve, reject) => {
+      if (!bridge.connected) {
+        reject('Connection not established!')
+      }
+      try {
+        const query = `
+          DELETE FROM platform
+          WHERE platform_id='${payload.platform_id}'
+        `
+        bridge.con.query(query, (err, data) => {
+          var res
+          if (err) {
+            console.log(err.message)
+            res = {
+              success: false,
+              errMsg: err.message
+            }
+          } else {
+            res = {
+              success: true,
             }
           }
           resolve(res)

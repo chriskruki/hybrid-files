@@ -1,8 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGear, faL } from '@fortawesome/free-solid-svg-icons'
+import { faGear } from '@fortawesome/free-solid-svg-icons'
 import Modal from '../components/Modal'
 import { useSqlSettings, useSqlSettingsUpdate } from '../context/SqlContext'
 import { useEffect } from 'react'
+import FormInput from '../components/FormInput'
 
 export default function GradientLayout({ children }) {
   const sqlSettings = useSqlSettings()
@@ -43,57 +44,51 @@ export default function GradientLayout({ children }) {
   const settingsContent = (
     <form onSubmit={requestConnection}>
       <div className="flex flex-col gap-2 justify-center items-center">
+        {/* Host */}
+        <FormInput
+          label="Host"
+          type="text"
+          name="mysql_host"
+          value={sqlSettings.host}
+          onChange={(e) => {
+            updateSqlSettings('host', e.target.value)
+          }}
+        />
+        {/* Database */}
+        <FormInput
+          label="Database / Schema"
+          type="text"
+          name="mysql_database"
+          value={sqlSettings.database}
+          onChange={(e) => {
+            updateSqlSettings('database', e.target.value)
+          }}
+        />
+
         {/* Username */}
-        <div>
-          <label
-            htmlFor="mysql_username"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            MySQL Username
-          </label>
-          <input
-            type="text"
-            name="mysql_username"
-            id="mysql_username"
-            className="rounded-lg block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-            placeholder="BoatyMcBoatFace"
-            required=""
-            value={sqlSettings.username}
-            onChange={(e) => {
-              updateSqlSettings('username', e.target.value)
-            }}
-          />
-        </div>
+        <FormInput
+          label="Username"
+          type="text"
+          name="mysql_username"
+          value={sqlSettings.username}
+          onChange={(e) => {
+            updateSqlSettings('username', e.target.value)
+          }}
+        />
         {/* Password */}
-        <div>
-          <label
-            htmlFor="mysql_password"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            MySQL Username
-          </label>
-          <input
-            type="password"
-            name="mysql_password"
-            id="mysql_password"
-            className="rounded-lg block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-            placeholder="••••••••"
-            required=""
-            value={sqlSettings.password}
-            onChange={(e) => {
-              updateSqlSettings('password', e.target.value)
-            }}
-          />
-        </div>
-        {/* Show Password */}
-        {/* <div className="btn w-full flex gap-2 justify-center">
-          <input id="showpass" type="checkbox" className="border-gray-600 bg-gray-600" />
-          <label htmlFor="showpass">Show Password</label>
-        </div> */}
+        <FormInput
+          type="password"
+          name="mysql_password"
+          placeholder="••••••••"
+          value={sqlSettings.password}
+          onChange={(e) => {
+            updateSqlSettings('password', e.target.value)
+          }}
+        />
+
         <button type="submit" className="fbtn p-2 w-full">
           {sqlSettings.connected ? 'Refresh' : 'Connect'}
         </button>
-
         <div
           className={`btn w-full flex justify-center items-center text-center m-0 ${statusBgColor}`}
         >
