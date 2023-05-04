@@ -88,5 +88,37 @@ export const sqlBridge = {
         reject(e.message)
       }
     })
+  },
+  getPlatforms: async (payload) => {
+    return new Promise((resolve, reject) => {
+      if (!bridge.connected) {
+        reject('Connection not established!')
+      }
+      try {
+        const query = `
+          SELECT *
+          FROM platform;
+        `
+        bridge.con.query(query, (err, data) => {
+          var res
+          if (err) {
+            console.log(err.message)
+            res = {
+              success: false,
+              errMsg: err.message
+            }
+          } else {
+            res = {
+              success: true,
+              data: data
+            }
+          }
+          resolve(res)
+        })
+      } catch (e) {
+        reject(e.message)
+      }
+    })
   }
+  
 }
