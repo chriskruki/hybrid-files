@@ -1,14 +1,16 @@
 import { Fragment, useEffect, useState } from 'react'
 import NavBar from '../components/NavBar'
 import { PAGES } from '../utils/constants'
-import { useSqlSettings } from '../context/SqlContext'
+import { useSqlSettings, useSqlSettingsUpdate } from '../context/SqlContext'
 import DarkTable from '../components/Table'
 import LeftIsland from '../components/LeftIsland'
 import Modal from '../components/Modal'
 import FormInput from '../components/FormInput'
 
 export default function PlatformsPage({ currPage, setCurrPage }) {
+  const pageVisible = currPage === PAGES.PLATFORMS
   const sqlSettings = useSqlSettings()
+  const updateSqlSettings = useSqlSettingsUpdate()
   const [resMsg, setResMsg] = useState('') // Create res msg in bottom bar?
   const [platformList, setPlatformList] = useState([]) // Create res msg in bottom bar?
   const [newPlatform, setNewPlatform] = useState({
@@ -22,6 +24,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
     reqInProg: false,
     reqSuccess: false
   })
+
   const updateNewPlatform = (key, val) => {
     if (!(key in newPlatform)) {
       console.error(`Key [${key}] error in newPlatform update`)
@@ -33,9 +36,10 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
       }
     })
   }
-  const pageVisible = currPage === PAGES.PLATFORMS
+
 
   const getPlatforms = () => {
+    updateSqlSettings('log')
     const payload = {}
     try {
       window.api
@@ -43,10 +47,12 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
         .then((res) => {
           if (res.success) {
             console.log(res.data)
+            updateSqlSettings('log', 'Platform fetch success')
             setPlatformList(res.data)
           } else {
             useState([])
-            setResMsg('Platform fetch failed')
+            // setResMsg('Platform fetch failed')
+            updateSqlSettings('log', 'Platform fetch failed')
             console.error('Platform fetch failed')
           }
         })
@@ -55,6 +61,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
         })
     } catch (e) {
       console.error('Sql Bridge access error')
+      updateSqlSettings('log', 'Sql Bridge access error')
     }
   }
 
@@ -66,18 +73,16 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
         .sqlBridge('insertPlatform', payload)
         .then((res) => {
           if (res.success) {
-            console.log(res.data)
-            setResMsg('Platform created')
+            updateSqlSettings('log', 'Platform created')
           } else {
-            setResMsg('Platform failed to create')
-            console.error('Platform failed to create')
+            updateSqlSettings('log', 'Platform creation failed')
           }
         })
         .catch((reason) => {
           setResMsg(reason)
         })
     } catch (e) {
-      console.error('Sql Bridge access error')
+      updateSqlSettings('log', 'Sql Bridge access error')
     }
   }
 

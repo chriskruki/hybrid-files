@@ -29,7 +29,7 @@ const DarkTable = ({ headers, list }) => {
                 //     displayVal = new Date(value.toISOString())
                 // }
                 return (
-                  <td key={`${idx}-${index}`} className="px-6 py-4 whitespace-nowrap w-fit">
+                  <td key={`${idx}-${index}`} className="px-6 py-4 w-fit">
                     <div className="text-sm text-gray-300 border-sky-700 border rounded p-2">{`${displayVal}`}</div>
                   </td>
                 )

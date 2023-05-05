@@ -17,17 +17,28 @@ export function SqlSettingsProvider({ children }) {
     database: 'hybridfiles',
     connected: false,
     status: 'Not Initialized',
-    resMsg: ''
+    resMsg: '',
+    log: [],
   })
 
   const updateSqlSettings = (key, value) => {
+    var newVal = value
     if (!(key in sqlSettings)) {
       console.error(`Key [${key}] error in sqlSettings update`)
+    }
+    if (key === "log") {
+      newVal = [...sqlSettings.log]
+      if (sqlSettings.log.length > 2) {
+        newVal.pop()
+        console.log(`After pop: ${newVal}`)
+      }
+      newVal.unshift(`${value}`)
+      console.log(`After unshift: ${newVal}`)
     }
     setSqlSettings((prev) => {
       return {
         ...prev,
-        [key]: value
+        [key]: newVal
       }
     })
   }

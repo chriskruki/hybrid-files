@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGear } from '@fortawesome/free-solid-svg-icons'
+import { faGear, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import Modal from '../components/Modal'
 import { useSqlSettings, useSqlSettingsUpdate } from '../context/SqlContext'
 import { useEffect } from 'react'
@@ -21,16 +21,19 @@ export default function GradientLayout({ children }) {
           updateSqlSettings('connected', res.success)
           updateSqlSettings('resMsg', `${res.msg}`)
           updateSqlSettings('status', res.success ? 'Connected' : 'Disconnected')
+          updateSqlSettings('log', 'SQL Connection Success')
         })
         .catch((res) => {
           updateSqlSettings('connected', false)
           updateSqlSettings('status', 'Disconnected')
           updateSqlSettings('resMsg', `${res}`)
+          updateSqlSettings('log', 'SQL Connection Failed')
         })
     } catch (err) {
       updateSqlSettings('connected', false)
       updateSqlSettings('status', 'Disconnected')
       updateSqlSettings('resMsg', `${err}`)
+      updateSqlSettings('log', 'SQL Connection Failed')
     }
   }
 
@@ -105,24 +108,41 @@ export default function GradientLayout({ children }) {
     <div className="w-full h-full flex flex-col bg-gradient-to-t from-sky-600 to-sky-800">
       <div className="flex-1 flex p-4 gap-4 h-full">{children}</div>
       {/* Bottom Bar */}
-      <div className="w-full h-[35px] bg-gray-800 flex justify-end items-center text-s">
-        {/* SQL Status */}
-        <div
-          className={`h-full px-2 flex items-center hover:bg-gray-700 cursor-default transition-all ${statusTextColor}`}
-        >
-          {sqlSettings.connected ? 'MySQL Server connected' : 'MySQL Server disconnected'}
+      <div className="w-full h-[35px] bg-gray-800 flex justify-between items-center px-2">
+        <div className="flex gap-1 max-w-[50%] m-0 p-0 items-center">
+          <FontAwesomeIcon icon={faArrowRight} />
+          {sqlSettings.log.map((logItem, idx) => {
+            const fade = 1 - idx * 0.3
+            return (
+              <div
+                key={idx}
+                className="font-light font-sm p-1 border rounded"
+                style={{ opacity: fade }}
+              >
+                {logItem}
+              </div>
+            )
+          })}
         </div>
-        {/* Gear Modal Toggle */}
-        <Modal title={'MySQL Settings'} content={settingsContent}>
-          {(toggleOpen) => (
-            <div
-              onClick={toggleOpen}
-              className="h-full px-2 flex items-center hover:bg-gray-700 cursor-pointer transition-all"
-            >
-              <FontAwesomeIcon icon={faGear} />
-            </div>
-          )}
-        </Modal>
+        <div className="flex">
+          {/* SQL Status */}
+          <div
+            className={`h-full text-s px-2 flex items-center hover:bg-gray-700 cursor-default transition-all ${statusTextColor}`}
+          >
+            {sqlSettings.connected ? 'MySQL Server connected' : 'MySQL Server disconnected'}
+          </div>
+          {/* Gear Modal Toggle */}
+          <Modal title={'MySQL Settings'} content={settingsContent}>
+            {(toggleOpen) => (
+              <div
+                onClick={toggleOpen}
+                className="h-full px-2 flex items-center hover:bg-gray-700 cursor-pointer transition-all"
+              >
+                <FontAwesomeIcon icon={faGear} />
+              </div>
+            )}
+          </Modal>
+        </div>
       </div>
     </div>
   )
