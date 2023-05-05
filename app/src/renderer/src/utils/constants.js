@@ -14,3 +14,15 @@ export const NAVBTNS = [
   { label: 'Users', page: PAGES.USERS },
   { label: 'Groups', page: PAGES.GROUPS }
 ]
+
+export const INIT_PLATFORM = {
+  name: '',
+  type: '',
+  schema: '',
+  status: '',
+  auth_id: '',
+  auth_pass: '',
+  reqMsg: '',
+  reqInProg: false,
+  reqSuccess: false
+}
