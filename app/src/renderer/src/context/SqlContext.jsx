@@ -30,10 +30,8 @@ export function SqlSettingsProvider({ children }) {
       newVal = [...sqlSettings.log]
       if (sqlSettings.log.length > 2) {
         newVal.pop()
-        console.log(`After pop: ${newVal}`)
       }
       newVal.unshift(`${value}`)
-      console.log(`After unshift: ${newVal}`)
     }
     setSqlSettings((prev) => {
       return {

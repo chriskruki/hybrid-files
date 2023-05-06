@@ -29,3 +29,22 @@ body {
   @apply bg-sky-600
 }
 
+.drop-in {
+  animation-name: drop-in-frames;
+  animation-fill-mode: backwards;
+  animation-delay: 5ms;
+  animation-duration: 100ms;
+}
+
+@keyframes drop-in-frames {
+  from {
+    opacity: 0;
+    background-color: aqua;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    background-color: red;
+    transform: translateX(0px);
+  }
+}

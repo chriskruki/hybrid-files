@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGear, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import Modal from '../components/Modal'
 import { useSqlSettings, useSqlSettingsUpdate } from '../context/SqlContext'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import FormInput from '../components/FormInput'
 
 export default function GradientLayout({ children }) {
@@ -43,6 +43,14 @@ export default function GradientLayout({ children }) {
   useEffect(() => {
     requestConnection()
   }, [])
+
+  useEffect(() => {
+    setcolor('bg-red-600')
+    setTimeout(() => {
+      console.log('fire')
+      setcolor('')
+    }, 250)
+  }, [sqlSettings.log])
 
   const settingsContent = (
     <form onSubmit={requestConnection}>
@@ -104,19 +112,28 @@ export default function GradientLayout({ children }) {
     </form>
   )
 
+  var someClass = 'bg-red-600'
+  const [color, setcolor] = useState('bg-red-600')
+  // setTimeout(() => {
+  //   console.log('fire')
+  //   setcolor('')
+  // }, 250)
+
   return (
     <div className="w-full h-full flex flex-col bg-gradient-to-t from-sky-600 to-sky-800">
       <div className="flex-1 flex p-4 gap-4 h-full">{children}</div>
       {/* Bottom Bar */}
-      <div className="w-full h-[35px] bg-gray-800 flex justify-between items-center px-2">
-        <div className="flex gap-1 max-w-[50%] m-0 p-0 items-center">
+      <div className="w-full h-[35px] bg-gray-800 flex justify-between items-center px-2 py-0">
+        {/* Log Section */}
+        <div className="flex h-full gap-2 max-w-[50%] m-0 py-1 items-center">
           <FontAwesomeIcon icon={faArrowRight} />
           {sqlSettings.log.map((logItem, idx) => {
             const fade = 1 - idx * 0.3
+
             return (
               <div
                 key={idx}
-                className="font-light font-sm p-1 border rounded"
+                className={`font-light font-sm p-1 border-l border-r rounded hover:bg-gray-600/50 transition-all cursor-default drop-in`}
                 style={{ opacity: fade }}
               >
                 {logItem}
@@ -124,7 +141,8 @@ export default function GradientLayout({ children }) {
             )
           })}
         </div>
-        <div className="flex">
+        {/* SQL Status Section */}
+        <div className="flex gap-2 justify-center items-center h-full">
           {/* SQL Status */}
           <div
             className={`h-full text-s px-2 flex items-center hover:bg-gray-700 cursor-default transition-all ${statusTextColor}`}

@@ -18,7 +18,6 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
   const [modalTitle, setModalTitle] = useState("")
   const [platformHolder, setPlatformHolder] = useState({...INIT_PLATFORM})
 
-  console.log(`holder: ${JSON.stringify(platformHolder)}`)
 
   const toggleModalOpen = () => setModalOpen(!modalOpen)
   const resetPlatformHolder = () => {
@@ -45,7 +44,6 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
         .sqlBridge('getPlatforms', payload)
         .then((res) => {
           if (res.success) {
-            console.log(res.data)
             updateSqlSettings('log', 'Platform fetch success')
             setPlatformList(res.data)
           } else {
