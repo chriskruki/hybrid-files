@@ -46,10 +46,10 @@ function createWindow() {
 app.whenReady().then( async() => {
   electronApp.setAppUserModelId('com.electron')
   // Windows specific - load React Dev Tools
-  if (is.dev) {
-    const reactDevToolsPath = join(process.env.USERPROFILE, '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\fmkadmapgofadopljbjfkapdkoienihi\\4.27.6_0');
-    await session.defaultSession.loadExtension(reactDevToolsPath)
-  }
+  // if (is.dev) {
+  //   const reactDevToolsPath = join(process.env.USERPROFILE, '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\fmkadmapgofadopljbjfkapdkoienihi\\4.27.6_0');
+  //   await session.defaultSession.loadExtension(reactDevToolsPath)
+  // }
 
 
   app.on('browser-window-created', (_, window) => {

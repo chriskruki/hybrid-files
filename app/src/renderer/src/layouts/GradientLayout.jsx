@@ -98,6 +98,7 @@ export default function GradientLayout({ children }) {
         />
         {/* Password */}
         <FormInput
+          label="Password"
           type="password"
           name="mysql_password"
           placeholder="••••••••"
@@ -129,18 +130,31 @@ export default function GradientLayout({ children }) {
       <div className="w-full h-[35px] bg-gray-800 flex justify-between items-center py-0">
         {/* Log Section */}
         <div className="flex h-full gap-2 m-0 py-1 items-center overflow-hidden">
-          <FontAwesomeIcon icon={faHistory} className='pl-2'/>
+          <FontAwesomeIcon icon={faHistory} className="pl-2" />
           {sqlSettings.log.map((logItem, idx) => {
             var fade
             // Cannot do string interpolation with tailwind styles
             switch (idx) {
-              case 0: fade = 'opacity-100'; break;
-              case 1: fade = 'opacity-80'; break;
-              case 2: fade = 'opacity-60'; break;
-              case 3: fade = 'opacity-40'; break;
-              case 4: fade = 'opacity-20'; break;
-              case 5: fade = 'opacity-10'; break;
-              default: 'opacity-100'
+              case 0:
+                fade = 'opacity-100'
+                break
+              case 1:
+                fade = 'opacity-80'
+                break
+              case 2:
+                fade = 'opacity-60'
+                break
+              case 3:
+                fade = 'opacity-40'
+                break
+              case 4:
+                fade = 'opacity-20'
+                break
+              case 5:
+                fade = 'opacity-10'
+                break
+              default:
+                'opacity-100'
             }
 
             return (

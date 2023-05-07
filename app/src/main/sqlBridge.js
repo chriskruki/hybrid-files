@@ -137,6 +137,45 @@ export const sqlBridge = {
     `
     return DELETEQueryPromise(query)
   },
+  getGroups: async (payload) => {
+    const query = `
+    SELECT *
+    FROM \`group\`;
+    `
+    return GETQueryPromise(query)
+  },
+  editGroup: async (payload) => {
+    const query = `
+    UPDATE \`group\`
+    SET \`name\` = '${payload.name}',
+        \`description\`= '${payload.description}'
+    WHERE group_id = ${payload.group_id}
+    `
+    return PUTQueryPromise(query)
+  },
+  insertGroup: async (payload) => {
+    const query = `
+    INSERT INTO \`group\` (name, description)
+    VALUES ('${payload.name}', '${payload.description}');
+    `
+    return PUTQueryPromise(query)
+  },
+  deleteGroup: async (payload) => {
+    // Hardcode protect group 1 from deletion
+    if (parseInt(payload.group_id) === 1) {
+      return new Promise((resolve) => {
+        resolve({
+          success: false,
+          errMsg: "Cannot delete admin group!"
+        })
+      })
+    }
+    const query = `
+      DELETE FROM \`group\`
+      WHERE group_id='${payload.group_id}'
+    `
+    return DELETEQueryPromise(query)
+  },
 }
 
 // Resolves promise regardless - pivot on successs & errMsg

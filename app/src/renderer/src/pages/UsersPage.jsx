@@ -38,7 +38,7 @@ export default function UsersPage({ currPage, setCurrPage }) {
     })
   }
 
-  // Fetch all platforms and store in userList
+  // Fetch all users and store in userList
   const getUsers = (doLog) => {
     const payload = {}
     try {
@@ -51,13 +51,13 @@ export default function UsersPage({ currPage, setCurrPage }) {
             }
             setUserList(res.data)
           } else {
-            useState([])
             updateSqlSettings('log', 'User fetch failed', false)
-            console.error('User fetch failed', false)
+            console.error('User fetch failed: ' + res.errMsg)
           }
         })
         .catch((reason) => {
           setResMsg(reason)
+          updateSqlSettings('log', 'User fetch error', false)
         })
     } catch (e) {
       console.error('Sql Bridge access error')
@@ -65,7 +65,7 @@ export default function UsersPage({ currPage, setCurrPage }) {
     }
   }
 
-  // Edit a platform
+  // Edit a user
   const editUser = (e) => {
     e.preventDefault()
     const payload = userHolder
@@ -92,7 +92,7 @@ export default function UsersPage({ currPage, setCurrPage }) {
     }
   }
 
-  // Insert new platform
+  // Insert new user
   const insertUser = (e) => {
     e.preventDefault()
     const payload = userHolder
@@ -119,7 +119,7 @@ export default function UsersPage({ currPage, setCurrPage }) {
     }
   }
 
-  // Delete platform
+  // Delete user
   const deleteUser = (e) => {
     e.preventDefault()
     const payload = userHolder
@@ -292,12 +292,15 @@ export default function UsersPage({ currPage, setCurrPage }) {
         <div className="flex flex-col flex-1 gap-4">
           <NavBar currPage={currPage} setCurrPage={setCurrPage} />
           <div className="flex flex-1 overflow-y-auto paragraph island">
-            {userList && userList.length && (
+            {userList && userList.length ? (
               <DarkTable
                 headers={Object.keys(userList[0])}
                 list={userList}
                 dropdownElems={dropdownElems}
               />
+            ) : 
+            (
+              <div>No data to show {`:(`}</div>
             )}
           </div>
         </div>

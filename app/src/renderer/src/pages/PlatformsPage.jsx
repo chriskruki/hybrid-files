@@ -48,16 +48,17 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
             if (doLog) {
               updateSqlSettings('log', 'Platform fetch success', true)
             }
+            console.log(res.data)
             setPlatformList(res.data)
           } else {
-            useState([])
-            // setResMsg('Platform fetch failed')
+            setResMsg('Platform fetch failed')
             updateSqlSettings('log', 'Platform fetch failed', false)
-            console.error('Platform fetch failed', false)
+            console.error('Platform fetch failed: ' + res.errMsg)
           }
         })
         .catch((reason) => {
           setResMsg(reason)
+          updateSqlSettings('log', 'Platform fetch error', false)
         })
     } catch (e) {
       console.error('Sql Bridge access error')
@@ -334,12 +335,15 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
         <div className="flex flex-col flex-1 gap-4">
           <NavBar currPage={currPage} setCurrPage={setCurrPage} />
           <div className="flex flex-1 overflow-y-auto paragraph island">
-            {platformList && platformList.length && (
+            {platformList && platformList.length ? (
               <DarkTable
                 headers={Object.keys(platformList[0])}
                 list={platformList}
                 dropdownElems={dropdownElems}
               />
+            ) : 
+            (
+              <div>No data to show {`:(`}</div>
             )}
           </div>
         </div>

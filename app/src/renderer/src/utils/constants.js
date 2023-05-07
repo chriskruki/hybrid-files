@@ -33,3 +33,9 @@ export const INIT_USER = {
   username: '',
   password: ''
 }
+
+export const INIT_GROUP = {
+  group_id: -1,
+  name: '',
+  description: ''
+}
