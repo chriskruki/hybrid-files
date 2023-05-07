@@ -123,7 +123,7 @@ export default function GradientLayout({ children }) {
   )
 
   return (
-    <div className="w-full h-full flex flex-col bg-gradient-to-t from-sky-600 to-sky-800">
+    <div className="w-full h-full flex flex-col bg-gradient-to-t from-indigo-900 to-sky-500">
       <div className="flex-1 flex p-4 gap-4 h-full">{children}</div>
       {/* Bottom Bar */}
       <div className="w-full h-[35px] bg-gray-800 flex justify-between items-center py-0">
@@ -131,16 +131,28 @@ export default function GradientLayout({ children }) {
         <div className="flex h-full gap-2 m-0 py-1 items-center overflow-hidden">
           <FontAwesomeIcon icon={faHistory} className='pl-2'/>
           {sqlSettings.log.map((logItem, idx) => {
-            const fade = 1 - idx * 0.2
+            var fade
+            // Cannot do string interpolation with tailwind styles
+            switch (idx) {
+              case 0: fade = 'opacity-100'; break;
+              case 1: fade = 'opacity-80'; break;
+              case 2: fade = 'opacity-60'; break;
+              case 3: fade = 'opacity-40'; break;
+              case 4: fade = 'opacity-20'; break;
+              case 5: fade = 'opacity-10'; break;
+              default: 'opacity-100'
+            }
+
             return (
               <div
                 key={idx}
                 className={`font-light font-sm p-1 border-l border-r rounded transition-all cursor-default
+                  ${fade} hover:opacity-100
                   ${logItem.success ? 'bg-green-700/75' : 'bg-red-700/75'}
                   ${fadeIn && idx !== 0 ? 'drop-in' : ''}
                   ${fadeIn && idx === 0 ? 'zoom-in' : ''}
                 `}
-                style={{ opacity: fade }}
+                // style={{ opacity: fade }}
               >
                 {logItem.value}
               </div>
