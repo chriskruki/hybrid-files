@@ -173,6 +173,14 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
             >
               New Platform
             </button>
+            <button
+              className={`btn h-fit w-full p-2`}
+              onClick={() => {
+                updateSqlSettings('log', 'Test 1')
+              }}
+            >
+              Test 1
+            </button>
           </StaticModal>
         </LeftIsland>
         {/* Right Group */}

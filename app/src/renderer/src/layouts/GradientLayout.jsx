@@ -8,6 +8,7 @@ import FormInput from '../components/FormInput'
 export default function GradientLayout({ children }) {
   const sqlSettings = useSqlSettings()
   const updateSqlSettings = useSqlSettingsUpdate()
+  const [fadeIn, setFadeIn] = useState(false)
 
   // Request MySQL Connection using credentials
   const requestConnection = (e) => {
@@ -21,7 +22,11 @@ export default function GradientLayout({ children }) {
           updateSqlSettings('connected', res.success)
           updateSqlSettings('resMsg', `${res.msg}`)
           updateSqlSettings('status', res.success ? 'Connected' : 'Disconnected')
-          updateSqlSettings('log', 'SQL Connection Success')
+          if (res.success) {
+            updateSqlSettings('log', 'SQL Connection Success')
+          } else {
+            updateSqlSettings('log', 'SQL Connection Failed')
+          }
         })
         .catch((res) => {
           updateSqlSettings('connected', false)
@@ -45,11 +50,15 @@ export default function GradientLayout({ children }) {
   }, [])
 
   useEffect(() => {
-    setcolor('bg-red-600')
-    setTimeout(() => {
-      console.log('fire')
-      setcolor('')
-    }, 250)
+    setFadeIn(true)
+    console.log('fire')
+    const id = setTimeout(() => {
+      setFadeIn(false)
+    }, 500)
+
+    return () => {
+      clearTimeout(id)
+    }
   }, [sqlSettings.log])
 
   const settingsContent = (
@@ -112,28 +121,22 @@ export default function GradientLayout({ children }) {
     </form>
   )
 
-  var someClass = 'bg-red-600'
-  const [color, setcolor] = useState('bg-red-600')
-  // setTimeout(() => {
-  //   console.log('fire')
-  //   setcolor('')
-  // }, 250)
-
   return (
     <div className="w-full h-full flex flex-col bg-gradient-to-t from-sky-600 to-sky-800">
       <div className="flex-1 flex p-4 gap-4 h-full">{children}</div>
       {/* Bottom Bar */}
       <div className="w-full h-[35px] bg-gray-800 flex justify-between items-center px-2 py-0">
         {/* Log Section */}
-        <div className="flex h-full gap-2 max-w-[50%] m-0 py-1 items-center">
+        <div className="flex h-full gap-2 max-w-[50%] m-0 py-1 items-center overflow-clip">
           <FontAwesomeIcon icon={faArrowRight} />
           {sqlSettings.log.map((logItem, idx) => {
             const fade = 1 - idx * 0.3
-
             return (
               <div
                 key={idx}
-                className={`font-light font-sm p-1 border-l border-r rounded hover:bg-gray-600/50 transition-all cursor-default drop-in`}
+                className={`font-light font-sm p-1 border-l border-r rounded hover:bg-gray-600/50 transition-all cursor-default ${
+                  fadeIn ? 'drop-in' : ''
+                }`}
                 style={{ opacity: fade }}
               >
                 {logItem}

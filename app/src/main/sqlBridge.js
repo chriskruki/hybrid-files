@@ -152,9 +152,14 @@ export const sqlBridge = {
     })
   },
   deletePlatform: async (payload) => {
+    var res
     return new Promise((resolve, reject) => {
       if (!bridge.connected) {
-        reject('Connection not established!')
+        res = {
+          success: false,
+          errMsg: 'Connection not established!'
+        }
+        resolve(res)
       }
       try {
         const query = `
@@ -162,7 +167,6 @@ export const sqlBridge = {
           WHERE platform_id='${payload.platform_id}'
         `
         bridge.con.query(query, (err, data) => {
-          var res
           if (err) {
             console.log(err.message)
             res = {
@@ -177,7 +181,7 @@ export const sqlBridge = {
           resolve(res)
         })
       } catch (e) {
-        reject(e.message)
+        resolve(e.message)
       }
     })
   }
