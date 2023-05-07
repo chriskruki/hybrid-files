@@ -16,7 +16,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalContentKey, setModalContentKey] = useState()
   const [modalTitle, setModalTitle] = useState('')
-  const [platformHolder, setPlatformHolder] = useState({ ...INIT_PLATFORM })
+  const [platformHolder, setPlatformHolder] = useState(INIT_PLATFORM)
 
   const toggleModalOpen = () => setModalOpen(!modalOpen)
 
@@ -129,7 +129,6 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
         .then((res) => {
           if (res.success) {
             updateSqlSettings('log', `Platform ${payload.name} deleted`, true)
-            console.log('deletion success')
             getPlatforms(false)
             setModalOpen(false)
             resetPlatformHolder()
@@ -207,7 +206,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
         </div>
       </form>
     ),
-    editPlaformContent: (
+    editPlatformContent: (
       <form onSubmit={editPlaform}>
         <div className="grid grid-cols-1 max-w-[500px] gap-4">
           <FormInput
@@ -282,7 +281,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
       <button
         className="btn w-full text-sm text-gray-300 border-sky-700 border rounded p-2 flex gap-2 justify-center items-center relative"
         onClick={() => {
-          setModalContentKey('editPlaformContent')
+          setModalContentKey('editPlatformContent')
           setModalOpen(true)
           setModalTitle(`Edit Platform '${rowInfo.name}'`)
           setPlatformHolder(rowInfo)
@@ -321,6 +320,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
             <button
               className={`btn h-fit w-full p-2`}
               onClick={() => {
+                resetPlatformHolder()
                 setModalContentKey('newPlatformContent')
                 setModalOpen(true)
                 setModalTitle('New Platform')

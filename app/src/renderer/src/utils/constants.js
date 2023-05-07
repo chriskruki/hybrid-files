@@ -16,6 +16,7 @@ export const NAVBTNS = [
 ]
 
 export const INIT_PLATFORM = {
+  platform_id: -1,
   name: '',
   type: '',
   schema: '',
@@ -28,6 +29,7 @@ export const INIT_PLATFORM = {
 }
 
 export const INIT_USER = {
+  user_id: -1,
   username: '',
   password: ''
 }

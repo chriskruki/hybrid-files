@@ -59,7 +59,7 @@ export const sqlBridge = {
   },
   validateUser: async (payload) => {
     const query = `
-    SELECT *
+    SELECT username
     FROM \`user\`
     WHERE username='${payload.username}'
     AND password='${payload.password}';
@@ -97,7 +97,46 @@ export const sqlBridge = {
       WHERE platform_id='${payload.platform_id}'
     `
     return DELETEQueryPromise(query)
-  }
+  },
+  getUsers: async (payload) => {
+    const query = `
+    SELECT *
+    FROM user;
+    `
+    return GETQueryPromise(query)
+  },
+  editUser: async (payload) => {
+    const query = `
+    UPDATE user
+    SET \`username\` = '${payload.username}',
+        \`password\`= '${payload.password}'
+    WHERE user_id = ${payload.user_id}
+    `
+    return PUTQueryPromise(query)
+  },
+  insertUser: async (payload) => {
+    const query = `
+    INSERT INTO user (username, password)
+    VALUES ('${payload.username}', '${payload.password}');
+    `
+    return PUTQueryPromise(query)
+  },
+  deleteUser: async (payload) => {
+    // Hardcode protect user 1 from deletion
+    if (parseInt(payload.user_id) === 1) {
+      return new Promise((resolve) => {
+        resolve({
+          success: false,
+          errMsg: "Cannot delete admin user!"
+        })
+      })
+    }
+    const query = `
+      DELETE FROM user
+      WHERE user_id='${payload.user_id}'
+    `
+    return DELETEQueryPromise(query)
+  },
 }
 
 // Resolves promise regardless - pivot on successs & errMsg

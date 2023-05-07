@@ -31,7 +31,7 @@ const RowDropdown = ({ children, rowInfo }) => {
         onClick={toggleOpen}
       >
         <div className="flex gap-2 justify-center items-center">
-          <div>Action</div>
+          <div>Manage</div>
           <FontAwesomeIcon icon={faAngleDown} className="m-0" />
         </div>
         {isOpen && (

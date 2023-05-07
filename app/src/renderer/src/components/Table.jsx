@@ -3,14 +3,15 @@ import RowDropdown from './RowDropdown'
 
 const DarkTable = ({ headers, list, dropdownElems }) => {
   const actionHeader = [...headers, 'Action']
+  const headerClasses = [...headers.map(v => ''), 'w-[60px]']
   return (
     <table className="min-w-full divide-y divide-gray-700 table-auto overflow-auto">
       <thead className="bg-gray-800">
         <tr>
-          {actionHeader.map((header) => (
+          {actionHeader.map((header, idx) => (
             <th
               key={header}
-              className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+              className={`px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider ${headerClasses[idx]}`}
             >
               {header}
             </th>
@@ -28,7 +29,7 @@ const DarkTable = ({ headers, list, dropdownElems }) => {
                 //     displayVal = new Date(value.toISOString())
                 // }
                 return (
-                  <td key={`${idx}-${index}`} className="px-6 py-4 w-fit">
+                  <td key={`${idx}-${index}`} className={`px-6 py-4 w-fit`}>
                     <div className="text-sm text-gray-300 border-sky-700 border rounded p-2">{`${displayVal}`}</div>
                   </td>
                 )
