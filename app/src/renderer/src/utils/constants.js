@@ -26,3 +26,8 @@ export const INIT_PLATFORM = {
   reqInProg: false,
   reqSuccess: false
 }
+
+export const INIT_USER = {
+  username: '',
+  password: ''
+}

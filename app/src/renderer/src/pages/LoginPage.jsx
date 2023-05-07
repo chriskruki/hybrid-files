@@ -1,13 +1,12 @@
 import { useState } from 'react'
-import { PAGES } from '../utils/constants'
+import { PAGES, INIT_USER } from '../utils/constants'
+import { useSqlSettingsUpdate } from '../context/SqlContext'
 
 export default function LoginPage({ currPage, setCurrPage }) {
   const pageVisible = currPage === PAGES.LOGIN
+  const updateSqlSettings = useSqlSettingsUpdate()
   const [resMsg, setResMsg] = useState('')
-  const [userInfo, setUserInfo] = useState({
-    username: '',
-    password: ''
-  })
+  const [userInfo, setUserInfo] = useState(INIT_USER)
 
   const updateUserInfo = (key, val) => {
     if (!(key in userInfo)) {
@@ -21,6 +20,10 @@ export default function LoginPage({ currPage, setCurrPage }) {
     })
   }
 
+  const resetUserInfo = () => {
+    setUserInfo(INIT_USER)
+  }
+
   const onLogin = async (e) => {
     e.preventDefault()
     const payload = {
@@ -30,15 +33,15 @@ export default function LoginPage({ currPage, setCurrPage }) {
     window.api
       .sqlBridge('validateUser', payload)
       .then((res) => {
-        if (res.success) {
-          // Set page to Files
+        const userFound = res.data.length > 0
+        if (res.success && userFound) {
           setCurrPage(PAGES.FILES)
-          // Clear vars in case user logs out
           setResMsg('')
-          updateUserInfo('username', '')
-          updateUserInfo('password', '')
+          resetUserInfo()
+          updateSqlSettings('log', 'Login Success', true)
         } else {
           setResMsg('Login Failed')
+          updateSqlSettings('log', 'Login Failed', false)
         }
       })
       .catch((reason) => {

@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGear, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { faGear, faHistory } from '@fortawesome/free-solid-svg-icons'
 import Modal from '../components/Modal'
 import { useSqlSettings, useSqlSettingsUpdate } from '../context/SqlContext'
 import { useEffect, useState } from 'react'
@@ -23,35 +23,36 @@ export default function GradientLayout({ children }) {
           updateSqlSettings('resMsg', `${res.msg}`)
           updateSqlSettings('status', res.success ? 'Connected' : 'Disconnected')
           if (res.success) {
-            updateSqlSettings('log', 'SQL Connection Success')
+            updateSqlSettings('log', 'SQL Connection Success', true)
           } else {
-            updateSqlSettings('log', 'SQL Connection Failed')
+            updateSqlSettings('log', 'SQL Connection Failed', false)
           }
         })
         .catch((res) => {
           updateSqlSettings('connected', false)
           updateSqlSettings('status', 'Disconnected')
           updateSqlSettings('resMsg', `${res}`)
-          updateSqlSettings('log', 'SQL Connection Failed')
+          updateSqlSettings('log', 'SQL Connection Failed', false)
         })
     } catch (err) {
       updateSqlSettings('connected', false)
       updateSqlSettings('status', 'Disconnected')
       updateSqlSettings('resMsg', `${err}`)
-      updateSqlSettings('log', 'SQL Connection Failed')
+      updateSqlSettings('log', 'SQL Connection Failed', false)
     }
   }
 
   const statusTextColor = sqlSettings.connected ? 'text-green-400' : 'text-red-400'
   const statusBgColor = sqlSettings.connected ? 'bg-green-700' : 'bg-red-700'
 
+  // Request connection with default settings once
   useEffect(() => {
     requestConnection()
   }, [])
 
+  // Handle log fade in
   useEffect(() => {
     setFadeIn(true)
-    console.log('fire')
     const id = setTimeout(() => {
       setFadeIn(false)
     }, 500)
@@ -125,27 +126,29 @@ export default function GradientLayout({ children }) {
     <div className="w-full h-full flex flex-col bg-gradient-to-t from-sky-600 to-sky-800">
       <div className="flex-1 flex p-4 gap-4 h-full">{children}</div>
       {/* Bottom Bar */}
-      <div className="w-full h-[35px] bg-gray-800 flex justify-between items-center px-2 py-0">
+      <div className="w-full h-[35px] bg-gray-800 flex justify-between items-center py-0">
         {/* Log Section */}
-        <div className="flex h-full gap-2 max-w-[50%] m-0 py-1 items-center overflow-clip">
-          <FontAwesomeIcon icon={faArrowRight} />
+        <div className="flex h-full gap-2 m-0 py-1 items-center overflow-hidden">
+          <FontAwesomeIcon icon={faHistory} className='pl-2'/>
           {sqlSettings.log.map((logItem, idx) => {
-            const fade = 1 - idx * 0.3
+            const fade = 1 - idx * 0.2
             return (
               <div
                 key={idx}
-                className={`font-light font-sm p-1 border-l border-r rounded hover:bg-gray-600/50 transition-all cursor-default ${
-                  fadeIn ? 'drop-in' : ''
-                }`}
+                className={`font-light font-sm p-1 border-l border-r rounded transition-all cursor-default
+                  ${logItem.success ? 'bg-green-700/75' : 'bg-red-700/75'}
+                  ${fadeIn && idx !== 0 ? 'drop-in' : ''}
+                  ${fadeIn && idx === 0 ? 'zoom-in' : ''}
+                `}
                 style={{ opacity: fade }}
               >
-                {logItem}
+                {logItem.value}
               </div>
             )
           })}
         </div>
         {/* SQL Status Section */}
-        <div className="flex gap-2 justify-center items-center h-full">
+        <div className="flex justify-center items-center h-full">
           {/* SQL Status */}
           <div
             className={`h-full text-s px-2 flex items-center hover:bg-gray-700 cursor-default transition-all ${statusTextColor}`}

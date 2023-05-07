@@ -34,8 +34,8 @@ const StaticModal = ({ content, children, title, open, setOpen }) => {
     <>
       {children}
       {open && (
-        <div className={`fixed inset-0 left-0 z-50 overflow-hidden flex justify-center items-center bg-gray-700/75 text-base`}>
-          <div ref={modalRef} className={`relative island`}>
+        <div className={`fixed inset-0 left-0 z-50 overflow-hidden flex justify-center items-center bg-gray-700/75 text-base fade-in`}>
+          <div ref={modalRef} className={`relative island zoom-in`}>
             <div className="flex flex-col justify-center items-center gap-3">
               <h1 className="w-[500px] px-2 text-xl font-bold text-white text-center">{title}</h1>
               {content}

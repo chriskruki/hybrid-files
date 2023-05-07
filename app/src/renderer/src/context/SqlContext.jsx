@@ -10,6 +10,7 @@ export function useSqlSettingsUpdate() {
   return useContext(SqlSettingsUpdateContext)
 }
 export function SqlSettingsProvider({ children }) {
+  const maxLogLength = 5
   const [sqlSettings, setSqlSettings] = useState({
     username: 'root',
     password: 'cpsc408',
@@ -21,17 +22,20 @@ export function SqlSettingsProvider({ children }) {
     log: [],
   })
 
-  const updateSqlSettings = (key, value) => {
+  const updateSqlSettings = (key, value, success) => {
     var newVal = value
     if (!(key in sqlSettings)) {
       console.error(`Key [${key}] error in sqlSettings update`)
     }
     if (key === "log") {
       newVal = [...sqlSettings.log]
-      if (sqlSettings.log.length > 2) {
+      if (sqlSettings.log.length > maxLogLength) {
         newVal.pop()
       }
-      newVal.unshift(`${value}`)
+      newVal.unshift({
+        value: value,
+        success: success
+      })
     }
     setSqlSettings((prev) => {
       return {

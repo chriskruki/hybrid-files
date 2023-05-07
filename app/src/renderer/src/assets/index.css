@@ -30,19 +30,31 @@ body {
 }
 
 .drop-in {
-  transform: translateX(-50px);
-  animation-name: drop-in-frames;
-  animation-fill-mode: forwards;
-  animation-duration: 200ms;
-  animation-timing-function: linear;
+  transform: translateX(-100px);
+  animation: drop-in-frames 200ms forwards ease-out;
 }
 
 @keyframes drop-in-frames {
   from {
-    transform: translateX(-50px);
+    transform: translateX(-100px);
   }
   to {
     transform: translateX(0px);
+  }
+}
+
+.zoom-in {
+  animation: zoom-in-frames 200ms forwards ease-out;
+}
+
+@keyframes zoom-in-frames {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 

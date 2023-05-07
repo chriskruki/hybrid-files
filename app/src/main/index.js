@@ -1,9 +1,11 @@
-import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, dialog, session } from 'electron'
 import { join, extname } from 'path'
+import { os } from 'os'
 import { readdir, statSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { sqlBridge } from './sqlBridge'
 import icon from '../../resources/icon.png?asset'
+
 
 function createWindow() {
   // Create the browser window.
@@ -41,8 +43,14 @@ function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then( async() => {
   electronApp.setAppUserModelId('com.electron')
+  // Windows specific - load React Dev Tools
+  if (is.dev) {
+    const reactDevToolsPath = join(process.env.USERPROFILE, '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\fmkadmapgofadopljbjfkapdkoienihi\\4.27.6_0');
+    await session.defaultSession.loadExtension(reactDevToolsPath)
+  }
+
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)

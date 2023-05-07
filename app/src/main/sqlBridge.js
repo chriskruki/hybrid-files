@@ -15,7 +15,6 @@ export const sqlBridge = {
           database: payload.database,
           user: payload.username,
           password: payload.password,
-          timezone: 'utc'
         })
 
         // On connect event
@@ -59,131 +58,137 @@ export const sqlBridge = {
     })
   },
   validateUser: async (payload) => {
-    return new Promise((resolve, reject) => {
-      if (!bridge.connected) {
-        reject('Connection not established!')
-      }
-      try {
-        const query = `
-          SELECT *
-          FROM \`user\`
-          WHERE username='${payload.username}'
-          AND password='${payload.password}';
-        `
-        bridge.con.query(query, (err, data, fields) => {
-          var res
-          if (err) {
-            console.log(err.message)
-            res = {
-              success: false,
-              errMsg: err.message
-            }
-          } else {
-            res = {
-              success: data.length > 0
-            }
-          }
-          resolve(res)
-        })
-      } catch (e) {
-        reject(e.message)
-      }
-    })
+    const query = `
+    SELECT *
+    FROM \`user\`
+    WHERE username='${payload.username}'
+    AND password='${payload.password}';
+    `
+    return GETQueryPromise(query)
   },
   getPlatforms: async (payload) => {
-    return new Promise((resolve, reject) => {
-      if (!bridge.connected) {
-        reject('Connection not established!')
-      }
-      try {
-        const query = `
-          SELECT *
-          FROM platform;
-        `
-        bridge.con.query(query, (err, data) => {
-          var res
-          if (err) {
-            console.log(err.message)
-            res = {
-              success: false,
-              errMsg: err.message
-            }
-          } else {
-            res = {
-              success: true,
-              data: data
-            }
-          }
-          resolve(res)
-        })
-      } catch (e) {
-        reject(e.message)
-      }
-    })
+    const query = `
+    SELECT *
+    FROM platform;
+    `
+    return GETQueryPromise(query)
+  },
+  editPlatform: async (payload) => {
+    const query = `
+    UPDATE platform
+    SET \`name\` = '${payload.name}',
+        \`type\`= '${payload.type}',
+        \`schema\` = '${payload.schema}',
+        \`status\` = '${payload.status}'
+    WHERE platform_id = ${payload.platform_id}
+    `
+    return PUTQueryPromise(query)
   },
   insertPlatform: async (payload) => {
-    return new Promise((resolve, reject) => {
-      if (!bridge.connected) {
-        reject('Connection not established!')
-      }
-      try {
-        const query = `
-          INSERT INTO platform (\`name\`, \`type\`, \`schema\`, status)
-          VALUES ('${payload.name}', '${payload.type}', '${payload.schema}', '${payload.status}');
-        `
-        bridge.con.query(query, (err, data) => {
-          var res
-          if (err) {
-            console.log(err.message)
-            res = {
-              success: false,
-              errMsg: err.message
-            }
-          } else {
-            res = {
-              success: true,
-            }
-          }
-          resolve(res)
-        })
-      } catch (e) {
-        reject(e.message)
-      }
-    })
+    const query = `
+    INSERT INTO platform (\`name\`, \`type\`, \`schema\`, status)
+    VALUES ('${payload.name}', '${payload.type}', '${payload.schema}', '${payload.status}');
+    `
+    return PUTQueryPromise(query)
   },
   deletePlatform: async (payload) => {
-    var res
-    return new Promise((resolve, reject) => {
-      if (!bridge.connected) {
-        res = {
-          success: false,
-          errMsg: 'Connection not established!'
+    const query = `
+      DELETE FROM platform
+      WHERE platform_id='${payload.platform_id}'
+    `
+    return DELETEQueryPromise(query)
+  }
+}
+
+// Resolves promise regardless - pivot on successs & errMsg
+const DELETEQueryPromise = (query) => {
+  return new Promise((resolve, reject) => {
+    var res = {
+      success: false,
+      errMsg: '',
+      data: []
+    }
+    if (!bridge.connected) {
+      res.success = false
+      res.errMsg = 'Connection not established!'
+      resolve(res)
+    }
+    try {
+      bridge.con.query(query, (err) => {
+        if (err) {
+          res.success = false
+          res.errMsg = err.message
+        } else {
+          res.success = true
         }
         resolve(res)
-      }
-      try {
-        const query = `
-          DELETE FROM platform
-          WHERE platform_id='${payload.platform_id}'
-        `
-        bridge.con.query(query, (err, data) => {
-          if (err) {
-            console.log(err.message)
-            res = {
-              success: false,
-              errMsg: err.message
-            }
-          } else {
-            res = {
-              success: true,
-            }
-          }
-          resolve(res)
-        })
-      } catch (e) {
-        resolve(e.message)
-      }
-    })
-  }
-  
+      })
+    } catch (e) {
+      res.success = false
+      res.errMsg = e.message
+      resolve(res)
+    }
+  })
+}
+
+const GETQueryPromise = (query, successCallback) => {
+  return new Promise((resolve, reject) => {
+    var res = {
+      success: false,
+      errMsg: '',
+      data: []
+    }
+    if (!bridge.connected) {
+      res.success = false
+      res.errMsg = 'Connection not established!'
+      resolve(res)
+    }
+    try {
+      bridge.con.query(query, (err, data) => {
+        if (err) {
+          res.success = false
+          res.errMsg = err.message
+        } else {
+          res.success = true
+          res.data = data
+          successCallback && successCallback(res)
+        }
+        resolve(res)
+      })
+    } catch (e) {
+      res.success = false
+      res.errMsg = e.message
+      resolve(res)
+    }
+  })
+}
+
+const PUTQueryPromise = (query, successCallback) => {
+  return new Promise((resolve, reject) => {
+    var res = {
+      success: false,
+      errMsg: '',
+    }
+    if (!bridge.connected) {
+      res.success = false
+      res.errMsg = 'Connection not established!'
+      resolve(res)
+    }
+    try {
+      bridge.con.query(query, (err, data) => {
+        if (err) {
+          res.success = false
+          res.errMsg = err.message
+        } else {
+          res.success = true
+          successCallback && successCallback(res)
+        }
+        resolve(res)
+      })
+    } catch (e) {
+      res.success = false
+      res.errMsg = e.message
+      resolve(res)
+    }
+  })
 }
