@@ -57,6 +57,7 @@ export const MEDIA_TYPES = [...IMAGE_TYPES, ...VIDEO_TYPES]
 
 export const INIT_JOB = {
   job_id: -1,
+  job_group: -1,
   name: '',
   type: '',
   status: '',
@@ -64,8 +65,8 @@ export const INIT_JOB = {
   dest_path: '',
   src_platform: '',
   dest_platform: '',
-  job_group: -1,
+  file_types: MEDIA_TYPES,
   selectedDir: '',
-  file_types: MEDIA_TYPES
+  dirRecursive: false,
 }
 

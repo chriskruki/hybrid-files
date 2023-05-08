@@ -244,7 +244,7 @@ export default function JobsPage({ currPage, setCurrPage }) {
               <label htmlFor={name} className="block text-sm mb-1 font-medium text-white">
                 Media Types
               </label>
-              <div className="rounded-lg w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white flex gap-1 overflow-auto">
+              <div className="flex justify-center rounded-lg w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white flex gap-1 overflow-auto">
                 {MEDIA_TYPES.map((val) => {
                   return (
                     <div key={val} className="rounded p-1 bg-gray-500">
@@ -257,10 +257,8 @@ export default function JobsPage({ currPage, setCurrPage }) {
             <FileDialog
               className="w-full"
               label={'Directory'}
-              selectedDir={jobHolder.selectedDir}
-              setSelectedDir={(val) => {
-                updateJobHolder('selectedDir', val)
-              }}
+              jobHolder={jobHolder}
+              updateJobHolder={updateJobHolder}
             />
           </div>
         )}
