@@ -48,13 +48,10 @@ export default function UsersTable({ userList, dropdownElems }) {
         key={row.user_id}
         row={row}
         mainRow={mainRow}
+        subLabel={'User Groups'}
         subHeader={subHeader}
         subBody={subBody}
       />
     ))
-  return userList && userList.length ? (
-    <HyTable dataList={userList} header={tableHeader} body={tableBody} />
-  ) : (
-    <div>No data to show {`:(`}</div>
-  )
+  return <HyTable dataList={userList} header={tableHeader} body={tableBody} />
 }

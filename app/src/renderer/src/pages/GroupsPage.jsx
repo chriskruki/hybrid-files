@@ -6,6 +6,8 @@ import DarkTable from '../components/HyTable'
 import LeftIsland from '../components/LeftIsland'
 import StaticModal from '../components/StaticModal'
 import FormInput from '../components/FormInput'
+import GroupsTable from '../components/GroupsTable'
+import RowDropdown from '../components/RowDropdown'
 
 export default function GroupsPage({ currPage, setCurrPage }) {
   const pageVisible = currPage === PAGES.GROUPS
@@ -236,7 +238,7 @@ export default function GroupsPage({ currPage, setCurrPage }) {
   }
 
   const dropdownElems = (rowInfo) => (
-    <Fragment>
+    <RowDropdown>
       <button
         className="btn w-full text-sm text-gray-300 border-sky-700 border rounded p-2 flex gap-2 justify-center items-center relative"
         onClick={() => {
@@ -259,7 +261,7 @@ export default function GroupsPage({ currPage, setCurrPage }) {
       >
         Delete
       </button>
-    </Fragment>
+    </RowDropdown>
   )
 
   return (
@@ -293,16 +295,7 @@ export default function GroupsPage({ currPage, setCurrPage }) {
         <div className="flex flex-col flex-1 gap-4">
           <NavBar currPage={currPage} setCurrPage={setCurrPage} />
           <div className="flex flex-1 overflow-y-auto paragraph island">
-            {groupList && groupList.length ? (
-              <DarkTable
-                headers={Object.keys(groupList[0])}
-                list={groupList}
-                dropdownElems={dropdownElems}
-              />
-            ) : 
-            (
-              <div>No data to show {`:(`}</div>
-            )}
+            <GroupsTable groupList={groupList} dropdownElems={dropdownElems}/>
           </div>
         </div>
       </Fragment>

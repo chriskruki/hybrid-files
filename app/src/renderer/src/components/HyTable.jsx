@@ -1,5 +1,4 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React, { Fragment } from 'react'
 import Box from '@mui/material/Box'
 import Collapse from '@mui/material/Collapse'
 import IconButton from '@mui/material/IconButton'
@@ -14,55 +13,9 @@ import Paper from '@mui/material/Paper'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import { styled } from '@mui/material/styles'
-import RowDropdown from './RowDropdown'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faHeartBroken } from '@fortawesome/free-solid-svg-icons'
 
-const DarkTableOld = ({ headers, list, dropdownElems }) => {
-  const actionHeader = [...headers, 'Action']
-  const headerClasses = [...headers.map((v) => ''), 'w-[60px]']
-  return (
-    <table className="min-w-full divide-y divide-gray-700 table-auto overflow-auto">
-      <thead className="bg-gray-800">
-        <tr>
-          {actionHeader.map((header, idx) => (
-            <th
-              key={header}
-              className={`px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider ${headerClasses[idx]}`}
-            >
-              {header}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody className="bg-gray-700 divide-y divide-gray-700 align-top odd:bg-slate-500">
-        {list.length ? (
-          list.map((item, idx) => (
-            <tr key={idx}>
-              {Object.values(item).map((value, index) => {
-                var displayVal = value
-                // console.log(typeof value)
-                // if (typeof value === Date) {
-                //     displayVal = new Date(value.toISOString())
-                // }
-                return (
-                  <td key={`${idx}-${index}`} className={`px-6 py-4 w-fit`}>
-                    <div className="text-sm text-gray-300 border-sky-700 border rounded p-2">{`${displayVal}`}</div>
-                  </td>
-                )
-              })}
-              <td className="px-6 py-4 whitespace-nowrap w-fit">
-                <RowDropdown rowInfo={item}>{dropdownElems}</RowDropdown>
-              </td>
-            </tr>
-          ))
-        ) : (
-          <tr>
-            <td>No data fetched</td>
-          </tr>
-        )}
-      </tbody>
-    </table>
-  )
-}
 
 export const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -88,6 +41,16 @@ export const StyledTableRow = styled(TableRow)(({ theme }) => ({
   }
 }))
 
+const blankRow = (
+  <Fragment>
+    <StyledTableCell>
+      No Data 
+    </StyledTableCell>
+    <StyledTableCell><FontAwesomeIcon icon={faHeartBroken} /></StyledTableCell>
+    <StyledTableCell><FontAwesomeIcon icon={faHeartBroken} /></StyledTableCell>
+    <StyledTableCell><FontAwesomeIcon icon={faHeartBroken} /></StyledTableCell>
+  </Fragment>
+)
 
 export function HyRow({ row, mainRow, subLabel, subHeader, subBody } ) {
   const [open, setOpen] = React.useState(false)
@@ -95,14 +58,14 @@ export function HyRow({ row, mainRow, subLabel, subHeader, subBody } ) {
   return (
     <React.Fragment>
       <StyledTableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-        <StyledTableCell>
+        {subLabel && (<StyledTableCell sx={{width: '75px'}}>
           <IconButton sx={{color: 'white', disabled: row.groups.length > 0}} aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
-        </StyledTableCell>
+        </StyledTableCell>)}
         {mainRow(row)}
       </StyledTableRow>
-      <StyledTableRow>
+      {subLabel && (<StyledTableRow>
         <StyledTableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
@@ -120,47 +83,20 @@ export function HyRow({ row, mainRow, subLabel, subHeader, subBody } ) {
             </Box>
           </Collapse>
         </StyledTableCell>
-      </StyledTableRow>
+      </StyledTableRow>)}
     </React.Fragment>
   )
 }
 
-// HyRow.propTypes = {
-//   row: PropTypes.shape({
-//     calories: PropTypes.number.isRequired,
-//     carbs: PropTypes.number.isRequired,
-//     fat: PropTypes.number.isRequired,
-//     history: PropTypes.arrayOf(
-//       PropTypes.shape({
-//         amount: PropTypes.number.isRequired,
-//         customerId: PropTypes.string.isRequired,
-//         date: PropTypes.string.isRequired
-//       })
-//     ).isRequired,
-//     name: PropTypes.string.isRequired,
-//     price: PropTypes.number.isRequired,
-//     protein: PropTypes.number.isRequired
-//   }).isRequired
-// }
-
-
-export default function HyTable({ header, body }) {
+export default function HyTable({ dataList, header, body }) {
   return (
     <TableContainer component={Paper} sx={{backgroundColor: '#455468'}}>
       <Table aria-label="collapsible table">
         <TableHead>
           {header}
-          {/* <StyledTableRow>
-            <StyledTableCell />
-            <StyledTableCell>Dessert (100g serving)</StyledTableCell>
-            <StyledTableCell align="right">Calories</StyledTableCell>
-            <StyledTableCell align="right">Fat&nbsp;(g)</StyledTableCell>
-            <StyledTableCell align="right">Carbs&nbsp;(g)</StyledTableCell>
-            <StyledTableCell align="right">Protein&nbsp;(g)</StyledTableCell>
-          </StyledTableRow> */}
         </TableHead>
         <TableBody>
-          {body}
+          {dataList.length > 0 && body}
         </TableBody>
       </Table>
     </TableContainer>

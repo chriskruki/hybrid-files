@@ -153,8 +153,6 @@ export default function UsersPage({ currPage, setCurrPage }) {
     }
   }
 
-
-
   // Store modal contents in list for refernce (breaks if using state)
   const modalContentList = {
     newUserContent: (

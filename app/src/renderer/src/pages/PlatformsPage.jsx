@@ -6,6 +6,8 @@ import DarkTable from '../components/HyTable'
 import LeftIsland from '../components/LeftIsland'
 import StaticModal from '../components/StaticModal'
 import FormInput from '../components/FormInput'
+import PlatformsTable from '../components/PlatformsTable'
+import RowDropdown from '../components/RowDropdown'
 
 export default function PlatformsPage({ currPage, setCurrPage }) {
   const pageVisible = currPage === PAGES.PLATFORMS
@@ -278,7 +280,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
   }
 
   const dropdownElems = (rowInfo) => (
-    <Fragment>
+    <RowDropdown>
       <button
         className="btn w-full text-sm text-gray-300 border-sky-700 border rounded p-2 flex gap-2 justify-center items-center relative"
         onClick={() => {
@@ -301,7 +303,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
       >
         Delete
       </button>
-    </Fragment>
+    </RowDropdown>
   )
 
   return (
@@ -335,16 +337,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
         <div className="flex flex-col flex-1 gap-4">
           <NavBar currPage={currPage} setCurrPage={setCurrPage} />
           <div className="flex flex-1 overflow-y-auto paragraph island">
-            {platformList && platformList.length ? (
-              <DarkTable
-                headers={Object.keys(platformList[0])}
-                list={platformList}
-                dropdownElems={dropdownElems}
-              />
-            ) : 
-            (
-              <div>No data to show {`:(`}</div>
-            )}
+            <PlatformsTable platformList={platformList} dropdownElems={dropdownElems}/>
           </div>
         </div>
       </Fragment>
