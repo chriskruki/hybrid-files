@@ -5,9 +5,8 @@ import { useSqlSettings, useSqlSettingsUpdate } from '../context/SqlContext'
 import LeftIsland from '../components/LeftIsland'
 import StaticModal from '../components/StaticModal'
 import FormInput from '../components/FormInput'
-import HyTable, { HyRow, StyledTableCell, StyledTableRow } from '../components/HyTable'
-// import { HeaderCell, HeaderRow, Row, Cell } from '@table-library/react-table-library/table'
 import RowDropdown from '../components/RowDropdown'
+import UsersTable from '../components/UsersTable'
 
 export default function UsersPage({ currPage, setCurrPage }) {
   const pageVisible = currPage === PAGES.USERS
@@ -20,7 +19,12 @@ export default function UsersPage({ currPage, setCurrPage }) {
   const [modalTitle, setModalTitle] = useState('')
   const [userHolder, setUserHolder] = useState(INIT_USER)
 
-  const toggleModalOpen = () => setModalOpen(!modalOpen)
+  // Only trigger if pageVisible changes
+  useEffect(() => {
+    if (pageVisible && sqlSettings.connected) {
+      getUsers(true)
+    }
+  }, [pageVisible])
 
   // Reset to inital blank values
   const resetUserHolder = () => {
@@ -149,12 +153,7 @@ export default function UsersPage({ currPage, setCurrPage }) {
     }
   }
 
-  // Only trigger if pageVisible changes
-  useEffect(() => {
-    if (pageVisible && sqlSettings.connected) {
-      getUsers(true)
-    }
-  }, [pageVisible])
+
 
   // Store modal contents in list for refernce (breaks if using state)
   const modalContentList = {
@@ -264,49 +263,6 @@ export default function UsersPage({ currPage, setCurrPage }) {
     </RowDropdown>
   )
 
-  const subHeader = (
-    <StyledTableRow>
-      <StyledTableCell>Group ID</StyledTableCell>
-      <StyledTableCell>Name</StyledTableCell>
-      <StyledTableCell>Description</StyledTableCell>
-    </StyledTableRow>
-  )
-
-  const subBody = (row) => {
-    return row.groups.map((user_group) => (
-      <StyledTableRow key={`group-${user_group.group_id}`}>
-        <StyledTableCell>{user_group.group_id}</StyledTableCell>
-        <StyledTableCell>{user_group.group_name}</StyledTableCell>
-        <StyledTableCell>{user_group.group_description}</StyledTableCell>
-      </StyledTableRow>
-    ))
-  }
-
-  const mainRow = (row) => (
-    <Fragment>
-      <StyledTableCell component="th" scope="row">
-        {row.user_id}
-      </StyledTableCell>
-      <StyledTableCell>{row.username}</StyledTableCell>
-      <StyledTableCell>{row.password}</StyledTableCell>
-      <StyledTableCell sx={{width: '75px'}}>{dropdownElems(row)}</StyledTableCell>
-    </Fragment>
-  )
-
-  const tableHeader = (
-    <StyledTableRow>
-      <StyledTableCell />
-      <StyledTableCell>User ID</StyledTableCell>
-      <StyledTableCell>Username</StyledTableCell>
-      <StyledTableCell>Password</StyledTableCell>
-      <StyledTableCell>Action</StyledTableCell>
-    </StyledTableRow>
-  )
-
-  const tableBody = userList && userList.map((row) => (
-    <HyRow key={row.user_id} row={row} mainRow={mainRow} subHeader={subHeader} subBody={subBody} />
-  ))
-
   return (
     pageVisible && (
       <Fragment>
@@ -338,11 +294,7 @@ export default function UsersPage({ currPage, setCurrPage }) {
         <div className="flex flex-col flex-1 gap-4">
           <NavBar currPage={currPage} setCurrPage={setCurrPage} />
           <div className="flex flex-1 overflow-auto paragraph island max-h-100">
-            {userList && userList.length ? (
-              <HyTable dataList={userList} header={tableHeader} body={tableBody} />
-            ) : (
-              <div>No data to show {`:(`}</div>
-            )}
+            <UsersTable userList={userList} dropdownElems={dropdownElems}/>
           </div>
         </div>
       </Fragment>
