@@ -17,6 +17,8 @@ export const sqlBridge = {
           password: payload.password,
         })
 
+        // https://stackoverflow.com/questions/59478692/date-mismatch-in-database-when-queried-by-node-script
+
         // On connect event
         con.connect((err) => {
           // Handle
@@ -102,6 +104,61 @@ export const sqlBridge = {
     const query = `
     SELECT *
     FROM user;
+    `
+    return GETQueryPromise(query)
+  },
+  getUserGroups: async (payload) => {
+    const query = `
+    SELECT *
+    FROM user_group_info;
+    `
+    var groupsRes = await GETQueryPromise(query)
+    // Return if original fetch fails
+    if (!groupsRes.success) {
+      return new Promise((resolve) => {
+        resolve(groupsRes)
+      })
+    }
+
+    var newData = {}
+    // Otherwise aggregate groups into user data
+    groupsRes.data.forEach((row, idx) => {
+      // If newData object has no user_id entries yet, init with group key
+      if (!Object.prototype.hasOwnProperty.call(newData, row.user_id)) {
+        newData[row.user_id] = {
+          user_id: row.user_id,
+          username: row.username,
+          password: row.password,
+          groups: []
+        }
+      }
+      // If group id match found (Left Join)
+      if (row.user_group_id) {
+        newData[row.user_id].groups.push({
+          user_group_id: row.user_group_id,
+          group_id: row.group_id,
+          group_name: row.group_name,
+          group_description: row.group_description
+        })
+      }
+
+    })
+
+    // Convert to array of objects
+    newData = Object.values(newData).map(obj => {
+      return { ...obj };
+    });
+    var newRes = groupsRes
+    newRes.data = newData
+
+    return new Promise((resolve) => {
+      resolve(newRes)
+    })
+  },
+  getUserGroupsByUser: async (payload) => {
+    const query = `
+    SELECT *
+    FROM user_group_info;
     `
     return GETQueryPromise(query)
   },

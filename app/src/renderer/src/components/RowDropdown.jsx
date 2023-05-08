@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons'
 import { useState, useEffect, useRef } from 'react'
 
-const RowDropdown = ({ children, rowInfo }) => {
+const RowDropdown = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef(null)
 
@@ -36,7 +36,7 @@ const RowDropdown = ({ children, rowInfo }) => {
         </div>
         {isOpen && (
           <div className="absolute top-[105%] w-[105%] gap-1 z-30 flex flex-col p-1 border-b-y rounded fade-in bg-gray-800">
-            {children(rowInfo)}
+            {children}
           </div>
         )}
       </div>

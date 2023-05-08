@@ -1,6 +1,6 @@
-import { app, shell, BrowserWindow, ipcMain, dialog, session } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join, extname } from 'path'
-import { os } from 'os'
+// import { os } from 'os'
 import { readdir, statSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { sqlBridge } from './sqlBridge'

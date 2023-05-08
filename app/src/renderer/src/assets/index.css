@@ -32,6 +32,7 @@ body {
 .drop-in {
   transform: translateX(-100px);
   animation: drop-in-frames 200ms forwards ease-out;
+  color: rgb(97, 97, 97);
 }
 
 @keyframes drop-in-frames {

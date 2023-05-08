@@ -2,10 +2,12 @@ import { Fragment, useEffect, useState } from 'react'
 import NavBar from '../components/NavBar'
 import { INIT_USER, PAGES } from '../utils/constants'
 import { useSqlSettings, useSqlSettingsUpdate } from '../context/SqlContext'
-import DarkTable from '../components/Table'
 import LeftIsland from '../components/LeftIsland'
 import StaticModal from '../components/StaticModal'
 import FormInput from '../components/FormInput'
+import HyTable, { HyRow, StyledTableCell, StyledTableRow } from '../components/HyTable'
+// import { HeaderCell, HeaderRow, Row, Cell } from '@table-library/react-table-library/table'
+import RowDropdown from '../components/RowDropdown'
 
 export default function UsersPage({ currPage, setCurrPage }) {
   const pageVisible = currPage === PAGES.USERS
@@ -43,7 +45,7 @@ export default function UsersPage({ currPage, setCurrPage }) {
     const payload = {}
     try {
       window.api
-        .sqlBridge('getUsers', payload)
+        .sqlBridge('getUserGroups', payload)
         .then((res) => {
           if (res.success) {
             if (doLog) {
@@ -58,6 +60,7 @@ export default function UsersPage({ currPage, setCurrPage }) {
         .catch((reason) => {
           setResMsg(reason)
           updateSqlSettings('log', 'User fetch error', false)
+          console.error('User fetch failed: ' + reason)
         })
     } catch (e) {
       console.error('Sql Bridge access error')
@@ -235,7 +238,7 @@ export default function UsersPage({ currPage, setCurrPage }) {
   }
 
   const dropdownElems = (rowInfo) => (
-    <Fragment>
+    <RowDropdown>
       <button
         className="btn w-full text-sm text-gray-300 border-sky-700 border rounded p-2 flex gap-2 justify-center items-center relative"
         onClick={() => {
@@ -258,8 +261,51 @@ export default function UsersPage({ currPage, setCurrPage }) {
       >
         Delete
       </button>
+    </RowDropdown>
+  )
+
+  const subHeader = (
+    <StyledTableRow>
+      <StyledTableCell>Group ID</StyledTableCell>
+      <StyledTableCell>Name</StyledTableCell>
+      <StyledTableCell>Description</StyledTableCell>
+    </StyledTableRow>
+  )
+
+  const subBody = (row) => {
+    return row.groups.map((user_group) => (
+      <StyledTableRow key={`group-${user_group.group_id}`}>
+        <StyledTableCell>{user_group.group_id}</StyledTableCell>
+        <StyledTableCell>{user_group.group_name}</StyledTableCell>
+        <StyledTableCell>{user_group.group_description}</StyledTableCell>
+      </StyledTableRow>
+    ))
+  }
+
+  const mainRow = (row) => (
+    <Fragment>
+      <StyledTableCell component="th" scope="row">
+        {row.user_id}
+      </StyledTableCell>
+      <StyledTableCell>{row.username}</StyledTableCell>
+      <StyledTableCell>{row.password}</StyledTableCell>
+      <StyledTableCell sx={{width: '75px'}}>{dropdownElems(row)}</StyledTableCell>
     </Fragment>
   )
+
+  const tableHeader = (
+    <StyledTableRow>
+      <StyledTableCell />
+      <StyledTableCell>User ID</StyledTableCell>
+      <StyledTableCell>Username</StyledTableCell>
+      <StyledTableCell>Password</StyledTableCell>
+      <StyledTableCell>Action</StyledTableCell>
+    </StyledTableRow>
+  )
+
+  const tableBody = userList && userList.map((row) => (
+    <HyRow key={row.user_id} row={row} mainRow={mainRow} subHeader={subHeader} subBody={subBody} />
+  ))
 
   return (
     pageVisible && (
@@ -291,15 +337,10 @@ export default function UsersPage({ currPage, setCurrPage }) {
         {/* Right Group */}
         <div className="flex flex-col flex-1 gap-4">
           <NavBar currPage={currPage} setCurrPage={setCurrPage} />
-          <div className="flex flex-1 overflow-y-auto paragraph island">
+          <div className="flex flex-1 overflow-auto paragraph island max-h-100">
             {userList && userList.length ? (
-              <DarkTable
-                headers={Object.keys(userList[0])}
-                list={userList}
-                dropdownElems={dropdownElems}
-              />
-            ) : 
-            (
+              <HyTable dataList={userList} header={tableHeader} body={tableBody} />
+            ) : (
               <div>No data to show {`:(`}</div>
             )}
           </div>
