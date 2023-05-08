@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const FileDialog = () => {
+export default function FileDialog({ className, label, name, hint }) {
   const [selectedDir, setSelectedDir] = useState('')
   const [fileList, setFileList] = useState([])
 
@@ -9,7 +9,8 @@ const FileDialog = () => {
       const params = {
         title: 'Select a media folder',
         buttonLabel: 'Select',
-        properties: ['openDirectory', 'multiSelections']
+        properties: ['openDirectory']
+        // properties: ['openDirectory', 'multiSelections']
       }
       const selectedDirs = await window.api.openDialog(params)
       console.log(selectedDirs)
@@ -36,11 +37,26 @@ const FileDialog = () => {
   }
 
   return (
-    <div>
-      <button className="btn h-15 p-2" onClick={handleOpenDialog}>
-        Open Directory
+    <div className={className}>
+      <label htmlFor={name} className="block text-sm mb-1 font-medium text-white">
+        {label}
+      </label>
+      <button
+        id={name}
+        className="rounded-lg w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white"
+        onClick={handleOpenDialog}
+      >
+        {label}
       </button>
-      {selectedDir && (
+      {hint && (
+        <label htmlFor={name} className="block mb-1 text-xs font-thin text-gray-400">
+          {hint}
+        </label>
+      )}
+      <label htmlFor={name} className="block mb-1 text-xs font-thin text-gray-400">
+        {fileList.length} files selected
+      </label>
+      {/* {selectedDir && (
         <div>
           <h2>Selected Directory:</h2>
           <p>{selectedDir}</p>
@@ -57,9 +73,7 @@ const FileDialog = () => {
             </pre>
           </ul>
         </div>
-      )}
+      )} */}
     </div>
   )
 }
-
-export default FileDialog

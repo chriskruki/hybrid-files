@@ -39,3 +39,14 @@ export const INIT_GROUP = {
   name: '',
   description: ''
 }
+
+export const INIT_JOB = {
+  job_id: -1,
+  name: '',
+  type: '',
+  status: '',
+  src_path: '',
+  dest_path: '',
+  src_platform: '',
+  dest_platform: ''
+}

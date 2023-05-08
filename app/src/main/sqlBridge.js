@@ -75,6 +75,14 @@ export const sqlBridge = {
     `
     return GETQueryPromise(query)
   },
+  getLocalPlatforms: async (payload) => {
+    const query = `
+    SELECT *
+    FROM platform
+    WHERE \`type\`='${payload.type}'
+    `
+    return GETQueryPromise(query)
+  },
   editPlatform: async (payload) => {
     const query = `
     UPDATE platform
@@ -232,6 +240,13 @@ export const sqlBridge = {
       WHERE group_id='${payload.group_id}'
     `
     return DELETEQueryPromise(query)
+  },
+  getJobs: async (payload) => {
+    const query = `
+    SELECT *
+    FROM job;
+    `
+    return GETQueryPromise(query)
   },
 }
 

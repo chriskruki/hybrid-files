@@ -29,6 +29,25 @@ body {
   @apply bg-sky-600
 }
 
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #333333;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #555555;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #4d4c4c;
+  border-radius: 3px;
+}
+
 .drop-in {
   transform: translateX(-100px);
   animation: drop-in-frames 200ms forwards ease-out;

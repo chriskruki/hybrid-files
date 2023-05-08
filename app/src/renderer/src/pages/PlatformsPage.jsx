@@ -2,12 +2,12 @@ import { Fragment, useEffect, useState } from 'react'
 import NavBar from '../components/NavBar'
 import { INIT_PLATFORM, PAGES } from '../utils/constants'
 import { useSqlSettings, useSqlSettingsUpdate } from '../context/SqlContext'
-import DarkTable from '../components/HyTable'
 import LeftIsland from '../components/LeftIsland'
 import StaticModal from '../components/StaticModal'
 import FormInput from '../components/FormInput'
 import PlatformsTable from '../components/PlatformsTable'
 import RowDropdown from '../components/RowDropdown'
+import FormSelect from '../components/FormSelect'
 
 export default function PlatformsPage({ currPage, setCurrPage }) {
   const pageVisible = currPage === PAGES.PLATFORMS
@@ -19,8 +19,6 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
   const [modalContentKey, setModalContentKey] = useState()
   const [modalTitle, setModalTitle] = useState('')
   const [platformHolder, setPlatformHolder] = useState(INIT_PLATFORM)
-
-  const toggleModalOpen = () => setModalOpen(!modalOpen)
 
   // Reset to inital blank values
   const resetPlatformHolder = () => {
@@ -50,7 +48,6 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
             if (doLog) {
               updateSqlSettings('log', 'Platform fetch success', true)
             }
-            console.log(res.data)
             setPlatformList(res.data)
           } else {
             setResMsg('Platform fetch failed')
@@ -163,7 +160,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
         <div className="grid grid-cols-1 max-w-[500px] gap-4">
           <FormInput
             label="Name"
-            hint="Name of the platform - anything"
+            hint="Name of the platform"
             name="name"
             type="text"
             value={platformHolder.name}
@@ -171,15 +168,21 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
               updatePlatformHolder('name', e.target.value)
             }}
           />
-          <FormInput
-            label="Type"
+          <FormSelect
+            label={'Type'}
             hint="Type of Platform (local, cloud)"
-            name="type"
-            type="text"
+            name={'type'}
             value={platformHolder.type}
             onChange={(e) => {
               updatePlatformHolder('type', e.target.value)
             }}
+            options={
+              <Fragment>
+                <option selected></option>
+                <option value="local">Local</option>
+                <option value="cloud">Cloud</option>
+              </Fragment>
+            }
           />
           <FormInput
             label="Schema"
@@ -191,15 +194,21 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
               updatePlatformHolder('schema', e.target.value)
             }}
           />
-          <FormInput
-            label="Status"
+          <FormSelect
+            label={'Status'}
             hint="Status of the platform (active, unactive)"
-            name="status"
-            type="text"
+            name={'status'}
             value={platformHolder.status}
             onChange={(e) => {
               updatePlatformHolder('status', e.target.value)
             }}
+            options={
+              <Fragment>
+                <option selected></option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </Fragment>
+            }
           />
 
           <button type="submit" className="fbtn p-2 w-full">
@@ -214,7 +223,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
         <div className="grid grid-cols-1 max-w-[500px] gap-4">
           <FormInput
             label="Name"
-            hint="Name of the platform - anything"
+            hint="Name of the platform"
             name="name"
             type="text"
             value={platformHolder.name}
@@ -284,6 +293,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
       <button
         className="btn w-full text-sm text-gray-300 border-sky-700 border rounded p-2 flex gap-2 justify-center items-center relative"
         onClick={() => {
+          setResMsg('')
           setModalContentKey('editPlatformContent')
           setModalOpen(true)
           setModalTitle(`Edit Platform '${rowInfo.name}'`)
@@ -295,6 +305,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
       <button
         className="btn w-full text-sm text-gray-300 border-sky-700 border rounded p-2 flex gap-2 justify-center items-center relative"
         onClick={() => {
+          setResMsg('')
           setModalContentKey('deletePlaformContent')
           setModalOpen(true)
           setModalTitle(`Delete Platform '${rowInfo.name}'?`)
@@ -337,7 +348,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
         <div className="flex flex-col flex-1 gap-4">
           <NavBar currPage={currPage} setCurrPage={setCurrPage} />
           <div className="flex flex-1 overflow-y-auto paragraph island">
-            <PlatformsTable platformList={platformList} dropdownElems={dropdownElems}/>
+            <PlatformsTable platformList={platformList} dropdownElems={dropdownElems} />
           </div>
         </div>
       </Fragment>

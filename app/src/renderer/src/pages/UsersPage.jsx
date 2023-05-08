@@ -239,6 +239,7 @@ export default function UsersPage({ currPage, setCurrPage }) {
       <button
         className="btn w-full text-sm text-gray-300 border-sky-700 border rounded p-2 flex gap-2 justify-center items-center relative"
         onClick={() => {
+          setResMsg('')
           setModalContentKey('editUserContent')
           setModalOpen(true)
           setModalTitle(`Edit User '${rowInfo.username}'`)
@@ -250,6 +251,7 @@ export default function UsersPage({ currPage, setCurrPage }) {
       <button
         className="btn w-full text-sm text-gray-300 border-sky-700 border rounded p-2 flex gap-2 justify-center items-center relative"
         onClick={() => {
+          setResMsg('')
           setModalContentKey('deleteUserContent')
           setModalOpen(true)
           setModalTitle(`Delete User '${rowInfo.username}'?`)

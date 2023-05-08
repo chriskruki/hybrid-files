@@ -242,6 +242,7 @@ export default function GroupsPage({ currPage, setCurrPage }) {
       <button
         className="btn w-full text-sm text-gray-300 border-sky-700 border rounded p-2 flex gap-2 justify-center items-center relative"
         onClick={() => {
+          setResMsg('')
           setModalContentKey('editGroupContent')
           setModalOpen(true)
           setModalTitle(`Edit Group '${rowInfo.name}'`)
@@ -253,6 +254,7 @@ export default function GroupsPage({ currPage, setCurrPage }) {
       <button
         className="btn w-full text-sm text-gray-300 border-sky-700 border rounded p-2 flex gap-2 justify-center items-center relative"
         onClick={() => {
+          setResMsg('')
           setModalContentKey('deleteGroupContent')
           setModalOpen(true)
           setModalTitle(`Delete Group '${rowInfo.name}'?`)
