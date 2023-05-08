@@ -14,7 +14,7 @@ body {
 }
 
 .island {
-  @apply rounded-xl bg-slate-600 p-4 border-2 border-slate-500;
+  @apply rounded-xl bg-slate-600 p-4 border-2 border-slate-500 shadow-md shadow-black;
 }
 
 .btn {

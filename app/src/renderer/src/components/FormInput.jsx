@@ -1,4 +1,4 @@
-export default function FormInput({ label, name, type, placeholder, value, onChange, hint, className }) {
+export default function FormInput({ label, name, type, placeholder, value, onChange, hint, className, disabled }) {
   return (
     <div className={className}>
       <label htmlFor={name} className="block text-sm mb-1 font-medium text-white">
@@ -13,6 +13,7 @@ export default function FormInput({ label, name, type, placeholder, value, onCha
         placeholder={placeholder || ''}
         value={value}
         onChange={onChange}
+        disabled={disabled}
       />
       {hint && (
         <label htmlFor={name} className="block mb-1 text-xs font-thin text-gray-400">

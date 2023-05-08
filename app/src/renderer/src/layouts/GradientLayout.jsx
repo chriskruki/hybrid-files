@@ -124,7 +124,7 @@ export default function GradientLayout({ children }) {
   )
 
   return (
-    <div className="w-full h-full flex flex-col bg-gradient-to-t from-indigo-900 to-sky-500">
+    <div className="w-full h-full flex flex-col bg-gradient-to-t from-sky-900 to-sky-500">
       <div className="flex-1 flex p-4 gap-4 h-full">{children}</div>
       {/* Bottom Bar */}
       <div className="w-full h-[35px] bg-gray-800 flex justify-between items-center py-0">

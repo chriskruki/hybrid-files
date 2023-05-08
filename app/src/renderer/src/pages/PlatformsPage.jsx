@@ -178,7 +178,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
             }}
             options={
               <Fragment>
-                <option selected></option>
+                <option></option>
                 <option value="local">Local</option>
                 <option value="cloud">Cloud</option>
               </Fragment>
@@ -204,7 +204,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
             }}
             options={
               <Fragment>
-                <option selected></option>
+                <option></option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </Fragment>

@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from 'react'
 import NavBar from '../components/NavBar'
-import { INIT_JOB, INIT_PLATFORM, PAGES } from '../utils/constants'
+import { INIT_JOB, INIT_PLATFORM, MEDIA_TYPES, PAGES } from '../utils/constants'
 import { useSqlSettings, useSqlSettingsUpdate } from '../context/SqlContext'
 import LeftIsland from '../components/LeftIsland'
 import StaticModal from '../components/StaticModal'
@@ -10,6 +10,7 @@ import RowDropdown from '../components/RowDropdown'
 import JobsTable from '../components/JobsTable'
 import FormSelect from '../components/FormSelect'
 import FileDialog from '../components/fileDialog'
+import MultipleSelectChip from '../components/MultiSelect'
 
 export default function JobsPage({ currPage, setCurrPage }) {
   const pageVisible = currPage === PAGES.JOBS
@@ -20,6 +21,7 @@ export default function JobsPage({ currPage, setCurrPage }) {
   const [jobHolder, setJobHolder] = useState(INIT_JOB)
   const [resMsg, setResMsg] = useState('')
   const [localPlatformList, setPlatformList] = useState([])
+  const [groupList, setGroupList] = useState([])
 
   const [modalOpen, setModalOpen] = useState(false)
   const [modalContentKey, setModalContentKey] = useState()
@@ -30,6 +32,7 @@ export default function JobsPage({ currPage, setCurrPage }) {
     if (pageVisible && sqlSettings.connected) {
       getJobs(true)
       getLocalPlatforms()
+      getGroups()
     }
   }, [pageVisible])
 
@@ -59,7 +62,20 @@ export default function JobsPage({ currPage, setCurrPage }) {
       const res = await window.api.sqlBridge('getLocalPlatforms', payload)
       if (res.success) {
         setPlatformList(res.data)
-        console.log(res)
+      }
+    } catch (e) {
+      console.error('Sql Bridge access error')
+      updateSqlSettings('log', 'Sql Bridge access error', false)
+    }
+  }
+
+  // Fetch groups for choices
+  const getGroups = async () => {
+    const payload = {}
+    try {
+      const res = await window.api.sqlBridge('getGroups', payload)
+      if (res.success) {
+        setGroupList(res.data)
       }
     } catch (e) {
       console.error('Sql Bridge access error')
@@ -152,12 +168,12 @@ export default function JobsPage({ currPage, setCurrPage }) {
   // Store modal contents in list for refernce (breaks if using state)
   const modalContentList = {
     newJobContent: (
-      <div className="flex flex-col justify-center items-center max-w-[500px]">
+      <div className="flex flex-col justify-center items-center max-w-[500px] gap-4">
         {/* Basic Info Section */}
         <div className="grid grid-cols-2 w-full gap-4 justify-center items-start">
           <FormInput
             label="Name"
-            hint="Name of the platform"
+            hint="Name of the job - custom"
             name="name"
             type="text"
             value={jobHolder.name}
@@ -175,7 +191,7 @@ export default function JobsPage({ currPage, setCurrPage }) {
             }}
             options={
               <Fragment>
-                <option selected></option>
+                <option></option>
                 <option value="local_index">Local Index</option>
                 <option disabled value="platform_transition">
                   Platform Transition
@@ -187,23 +203,65 @@ export default function JobsPage({ currPage, setCurrPage }) {
         </div>
         {/* Local Index Section */}
         {jobHolder.type === 'local_index' && (
-          <div className="w-full fade-in flex justify-between items-center gap-2">
-            <FormSelect
-              label="Src Platform"
-              hint="Name of the platform"
-              name="name"
-              value={jobHolder.src_platform}
-              className='w-1/2 h-full'
-              onChange={(e) => {
-                updateJobHolder('name', e.target.value)
+          <div className="flex flex-col fade-in w-full h-full gap-4 ">
+            <div className="w-full flex justify-between items-center gap-4">
+              <FormSelect
+                label="Src Platform"
+                hint="Source Platform"
+                name="src_platform"
+                value={jobHolder.src_platform}
+                className="w-1/2 h-full"
+                onChange={(e) => {
+                  updateJobHolder('name', e.target.value)
+                }}
+                options={localPlatformList.map((val) => {
+                  return (
+                    <option key={val.platform_id} value={val.platform_id}>
+                      {val.name}
+                    </option>
+                  )
+                })}
+              />
+              <FormSelect
+                label="File Groups"
+                hint="Groups that can see the ingested files"
+                name="job_group"
+                value={jobHolder.job_group}
+                className="w-1/2 h-full"
+                onChange={(e) => {
+                  updateJobHolder('job_group', e.target.value)
+                }}
+                options={groupList.map((val) => {
+                  return (
+                    <option key={val.group_id} value={val.group_id}>
+                      {val.name}
+                    </option>
+                  )
+                })}
+              />
+            </div>
+            <div className="w-full">
+              <label htmlFor={name} className="block text-sm mb-1 font-medium text-white">
+                Media Types
+              </label>
+              <div className="rounded-lg w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white flex gap-1 overflow-auto">
+                {MEDIA_TYPES.map((val) => {
+                  return (
+                    <div key={val} className="rounded p-1 bg-gray-500">
+                      {val}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+            <FileDialog
+              className="w-full"
+              label={'Directory'}
+              selectedDir={jobHolder.selectedDir}
+              setSelectedDir={(val) => {
+                updateJobHolder('selectedDir', val)
               }}
-              options={localPlatformList.map((val) => {
-                return (
-                  <option key={val.platform_id} value={val.platform_id}>{val.name}</option>
-                )
-              })}
             />
-            <FileDialog className='w-1/2' label={'Choose Directory'} />
           </div>
         )}
         <div className="w-1/2 h-full">

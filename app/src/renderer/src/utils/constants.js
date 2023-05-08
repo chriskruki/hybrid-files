@@ -40,6 +40,21 @@ export const INIT_GROUP = {
   description: ''
 }
 
+export const IMAGE_TYPES = [
+  '.png',
+  '.jpg',
+  '.jpeg'
+]
+
+export const VIDEO_TYPES = [
+  '.mp4',
+  '.avi',
+  '.mov',
+  '.mts'
+]
+
+export const MEDIA_TYPES = [...IMAGE_TYPES, ...VIDEO_TYPES]
+
 export const INIT_JOB = {
   job_id: -1,
   name: '',
@@ -48,5 +63,9 @@ export const INIT_JOB = {
   src_path: '',
   dest_path: '',
   src_platform: '',
-  dest_platform: ''
+  dest_platform: '',
+  job_group: -1,
+  selectedDir: '',
+  file_types: MEDIA_TYPES
 }
+

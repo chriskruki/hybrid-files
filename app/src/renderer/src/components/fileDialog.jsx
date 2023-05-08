@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
-export default function FileDialog({ className, label, name, hint }) {
-  const [selectedDir, setSelectedDir] = useState('')
+export default function FileDialog({ className, label, name, hint, selectedDir, setSelectedDir }) {
+  // const [selectedDir, setSelectedDir] = useState('')
   const [fileList, setFileList] = useState([])
 
   const handleOpenDialog = async () => {
@@ -13,7 +13,7 @@ export default function FileDialog({ className, label, name, hint }) {
         // properties: ['openDirectory', 'multiSelections']
       }
       const selectedDirs = await window.api.openDialog(params)
-      console.log(selectedDirs)
+      // console.log(selectedDirs)
       if (selectedDirs) {
         setSelectedDir(selectedDirs[0])
         const files = await getFilesInDirectory(selectedDirs[0])
@@ -41,13 +41,21 @@ export default function FileDialog({ className, label, name, hint }) {
       <label htmlFor={name} className="block text-sm mb-1 font-medium text-white">
         {label}
       </label>
-      <button
-        id={name}
-        className="rounded-lg w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white"
-        onClick={handleOpenDialog}
-      >
-        {label}
-      </button>
+      <div className="flex gap-1">
+        <button
+          id={name}
+          className="rounded-lg w-fit p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white text-sm"
+          onClick={handleOpenDialog}
+        >
+          Choose
+        </button>
+        <div
+          className="rounded-lg w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white overflow-auto"
+        >
+          {selectedDir}
+        </div>
+      </div>
+
       {hint && (
         <label htmlFor={name} className="block mb-1 text-xs font-thin text-gray-400">
           {hint}

@@ -72,7 +72,7 @@ export function HyRow({ row, mainRow, subLabel, subHeader, subBody } ) {
               <Typography variant="h6" gutterBottom component="div">
                 {subLabel}
               </Typography>
-              <Table size="small">
+              <Table className="border border-gray-800 rounded" size="small">
                 <TableHead>
                   {subHeader}
                 </TableHead>
@@ -90,7 +90,7 @@ export function HyRow({ row, mainRow, subLabel, subHeader, subBody } ) {
 
 export default function HyTable({ dataList, header, body }) {
   return (
-    <TableContainer component={Paper} sx={{backgroundColor: '#455468'}}>
+    <TableContainer className="border border-gray-800" component={Paper} sx={{backgroundColor: '#455468'}}>
       <Table aria-label="collapsible table">
         <TableHead>
           {header}
