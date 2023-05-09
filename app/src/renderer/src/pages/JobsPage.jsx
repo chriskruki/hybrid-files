@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from 'react'
 import NavBar from '../components/NavBar'
-import { INIT_JOB, INIT_PLATFORM, MEDIA_TYPES, PAGES } from '../utils/constants'
+import { INIT_JOB, MEDIA_TYPES, PAGES } from '../utils/constants'
 import { useSqlSettings, useSqlSettingsUpdate } from '../context/SqlContext'
 import LeftIsland from '../components/LeftIsland'
 import StaticModal from '../components/StaticModal'
@@ -39,7 +39,7 @@ export default function JobsPage({ currPage, setCurrPage }) {
 
   // Reset to inital blank values
   const resetJobHolder = () => {
-    setJobHolder(INIT_PLATFORM)
+    setJobHolder(INIT_JOB)
   }
 
   const updateJobHolder = (key, val) => {
@@ -116,34 +116,7 @@ export default function JobsPage({ currPage, setCurrPage }) {
     }
   }
 
-  // Edit a job - if not yet run
-  const editJob = (e) => {
-    e.preventDefault()
-    const payload = jobHolder
-    try {
-      window.api
-        .sqlBridge('editPlatform', payload)
-        .then((res) => {
-          if (res.success) {
-            updateSqlSettings('log', 'Job edit success', true)
-            getJobs(false)
-            setModalOpen(false)
-            resetJobHolder()
-          } else {
-            updateSqlSettings('log', 'Job edit failed', false)
-            setResMsg(`Job edit failed: ${res.errMsg}`)
-          }
-        })
-        .catch((reason) => {
-          setResMsg(reason)
-        })
-    } catch (e) {
-      updateSqlSettings('log', 'Sql Bridge access error', false)
-      setModalOpen(false)
-    }
-  }
-
-  // Insert new job
+  // Insert new job - import files
   const insertJob = (e) => {
     e.preventDefault()
     const payload = jobHolder
@@ -152,7 +125,7 @@ export default function JobsPage({ currPage, setCurrPage }) {
         .sqlBridge('insertJob', payload)
         .then((res) => {
           if (res.success) {
-            updateSqlSettings('log', `Job ${payload.name} created`, true)
+            updateSqlSettings('log', `Job ${payload.name} success`, true)
             getJobs(false)
             setModalOpen(false)
             resetJobHolder()
@@ -177,6 +150,21 @@ export default function JobsPage({ currPage, setCurrPage }) {
     setModalOpen(true)
     setModalTitle(`Orchestrate Job`)
     updateJobHolder('fileTypes', MEDIA_TYPES)
+  }
+
+  const previewFiles = (e) => {
+    updateJobHolder('date_started', new Date().toISOString())
+    window.api
+      .readDir(jobHolder.src_path, jobHolder.fileTypes, jobHolder.dirRecursive)
+      .then((res) => {
+        updateJobHolder('fileList', res.data)
+        updateJobHolder('date_finished', new Date().toISOString())
+      })
+  }
+
+  const commitFiles = (e) => {
+    e.preventDefault()
+    insertJob(e)
   }
 
   // Store modal contents in list for refernce (breaks if using state)
@@ -216,7 +204,6 @@ export default function JobsPage({ currPage, setCurrPage }) {
                 </Fragment>
               }
             />
-            <h1 className={`overflow-auto max-w-[200px] m-0 text-center`}>{resMsg}</h1>
           </div>
           {/* Local Index Section */}
           {jobHolder.type === 'local_index' && (
@@ -313,25 +300,14 @@ export default function JobsPage({ currPage, setCurrPage }) {
               updateJobHolder={updateJobHolder}
               required
             />
-            <button
-              className="fbtn p-2 h-fit w-fit"
-              onClick={async (e) => {
-                console.log(jobHolder.fileTypes)
-                const res = await window.api.readDir(
-                  jobHolder.src_path,
-                  jobHolder.fileTypes,
-                  jobHolder.dirRecursive
-                )
-                updateJobHolder('fileList', res.data)
-              }}
-            >
-              Load Files
+            <button className="fbtn p-2 h-fit w-fit" onClick={previewFiles}>
+              Preview Files
             </button>
           </div>
-          <div className="p-1 border border-gray-600">
+          <div className="p-2 border border-gray-800 rounded  text-lg font-bold">
             {jobHolder.fileList && jobHolder.fileList.length} files
           </div>
-          <div className="flex flex-col overflow-auto relative max-w-full max-h-[300px] border-2 p-2 border-gray-800 rounded overflow">
+          <div className="flex flex-col overflow-auto relative w-full max-h-[300px] border-2 p-2 border-gray-800 rounded overflow">
             <FilePreviewTable dataList={jobHolder.fileList ? jobHolder.fileList : []} />
           </div>
           {/* Bottom Buttons */}
@@ -346,10 +322,11 @@ export default function JobsPage({ currPage, setCurrPage }) {
             >
               Cancel
             </button>
-            <button type="submit" className="fbtn p-2 flex-1">
+            <button onClick={commitFiles} className="fbtn p-2 flex-1">
               Commit
             </button>
           </div>
+          <h1 className={`overflow-auto w-full text-red-400 m-0 text-center`}>{resMsg}</h1>
         </div>
       </Fragment>
     )
@@ -361,25 +338,13 @@ export default function JobsPage({ currPage, setCurrPage }) {
         className="btn w-full text-sm text-gray-300 border-sky-700 border rounded p-2 flex gap-2 justify-center items-center relative"
         onClick={() => {
           setResMsg('')
-          setModalContentKey('editPlatformContent')
+          setModalContentKey('orchestrateLocalIndex')
           setModalOpen(true)
           setModalTitle(`Edit Job '${rowInfo.name}'`)
           setJobHolder(rowInfo)
         }}
       >
         Edit
-      </button>
-      <button
-        className="btn w-full text-sm text-gray-300 border-sky-700 border rounded p-2 flex gap-2 justify-center items-center relative"
-        onClick={() => {
-          setResMsg('')
-          setModalContentKey('deletePlaformContent')
-          setModalOpen(true)
-          setModalTitle(`Delete Job '${rowInfo.name}'?`)
-          setJobHolder(rowInfo)
-        }}
-      >
-        Delete
       </button>
     </RowDropdown>
   )

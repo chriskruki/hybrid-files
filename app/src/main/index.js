@@ -113,6 +113,7 @@ function listFiles(baseDir, directory, fileTypes, recursive = false) {
           dirName: directory,
           name: fName,
           extName: extname(fName),
+          size: fStats.size,
           isFile: fStats.isFile(),
           accessTime: fStats.atime,
           changeTime: fStats.ctime,

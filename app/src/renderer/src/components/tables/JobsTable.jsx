@@ -12,9 +12,15 @@ export default function JobsTable({ jobList, dropdownElems }) {
       <StyledTableCell>{row.src_platform}</StyledTableCell>
       <StyledTableCell>{row.dest_path}</StyledTableCell>
       <StyledTableCell>{row.dest_platform}</StyledTableCell>
-      <StyledTableCell>{row.date_created}</StyledTableCell>
-      <StyledTableCell>{row.date_started}</StyledTableCell>
-      <StyledTableCell>{row.date_finished}</StyledTableCell>
+      <StyledTableCell>
+        {new Date(row.date_created).toLocaleString('en-US', { timeZone: 'UTC' })}
+      </StyledTableCell>
+      <StyledTableCell>
+        {new Date(row.date_started).toLocaleString('en-US', { timeZone: 'UTC' })}
+      </StyledTableCell>
+      <StyledTableCell>
+        {new Date(row.date_finished).toLocaleString('en-US', { timeZone: 'UTC' })}
+      </StyledTableCell>
       <StyledTableCell sx={{ width: '75px' }}>{dropdownElems(row)}</StyledTableCell>
     </Fragment>
   )
