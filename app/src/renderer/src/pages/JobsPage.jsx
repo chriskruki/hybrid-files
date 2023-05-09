@@ -11,6 +11,7 @@ import FormSelect from '../components/FormSelect'
 import FileDialog from '../components/fileDialog'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons'
+import FilePreviewTable from '../components/tables/FilePreviewTable'
 
 export default function JobsPage({ currPage, setCurrPage }) {
   const pageVisible = currPage === PAGES.JOBS
@@ -62,6 +63,8 @@ export default function JobsPage({ currPage, setCurrPage }) {
       const res = await window.api.sqlBridge('getLocalPlatforms', payload)
       if (res.success) {
         setPlatformList(res.data)
+      } else {
+        console.error('getLocalPlatforms failed')
       }
     } catch (e) {
       console.error('Sql Bridge access error')
@@ -76,6 +79,8 @@ export default function JobsPage({ currPage, setCurrPage }) {
       const res = await window.api.sqlBridge('getGroups', payload)
       if (res.success) {
         setGroupList(res.data)
+      } else {
+        console.error('getGroups failed')
       }
     } catch (e) {
       console.error('Sql Bridge access error')
@@ -87,7 +92,7 @@ export default function JobsPage({ currPage, setCurrPage }) {
   const getJobs = (doLog) => {
     const payload = {}
     try {
-      window.api
+      return window.api
         .sqlBridge('getJobs', payload)
         .then((res) => {
           if (res.success) {
@@ -167,11 +172,11 @@ export default function JobsPage({ currPage, setCurrPage }) {
 
   const onNewJobSubmit = (e) => {
     e.preventDefault()
-    console.log('submit!')
     setResMsg('')
     setModalContentKey('orchestrateLocalIndex')
     setModalOpen(true)
     setModalTitle(`Orchestrate Job`)
+    updateJobHolder('fileTypes', MEDIA_TYPES)
   }
 
   // Store modal contents in list for refernce (breaks if using state)
@@ -254,6 +259,7 @@ export default function JobsPage({ currPage, setCurrPage }) {
                   })}
                 />
               </div>
+              {/* Media Types */}
               <div className="w-full">
                 <label className="block text-sm mb-1 font-medium text-white">Media Types</label>
                 <div className="flex justify-center rounded-lg w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white gap-1 overflow-auto">
@@ -266,13 +272,6 @@ export default function JobsPage({ currPage, setCurrPage }) {
                   })}
                 </div>
               </div>
-              <FileDialog
-                className="w-full"
-                label={'Directory'}
-                jobHolder={jobHolder}
-                updateJobHolder={updateJobHolder}
-                required
-              />
             </div>
           )}
           {/* Submit Buttons */}
@@ -288,7 +287,7 @@ export default function JobsPage({ currPage, setCurrPage }) {
               Cancel
             </button>
             <button type="submit" className="fbtn p-2 w-full">
-              Save & Stage
+              Next
             </button>
           </div>
         </div>
@@ -317,23 +316,23 @@ export default function JobsPage({ currPage, setCurrPage }) {
             <button
               className="fbtn p-2 h-fit w-fit"
               onClick={async (e) => {
-                const res = await window.api.readdir(jobHolder.src_path)
+                console.log(jobHolder.fileTypes)
+                const res = await window.api.readDir(
+                  jobHolder.src_path,
+                  jobHolder.fileTypes,
+                  jobHolder.dirRecursive
+                )
                 updateJobHolder('fileList', res.data)
               }}
             >
               Load Files
             </button>
           </div>
-          <div className="flex flex-col overflow-y-auto relative max-h-[300px] border-2 p-2 border-gray-800 rounded overflow">
-            {jobHolder.fileList &&
-              jobHolder.fileList.map((val, idx) => {
-                return (
-                  <pre key={idx}>
-                    <div >{JSON.stringify(val, null, 2)}</div>
-                  </pre>
-                  // <HyTable>
-                )
-              })}
+          <div className="p-1 border border-gray-600">
+            {jobHolder.fileList && jobHolder.fileList.length} files
+          </div>
+          <div className="flex flex-col overflow-auto relative max-w-full max-h-[300px] border-2 p-2 border-gray-800 rounded overflow">
+            <FilePreviewTable dataList={jobHolder.fileList ? jobHolder.fileList : []} />
           </div>
           {/* Bottom Buttons */}
           <div className="flex gap-2 w-1/2">

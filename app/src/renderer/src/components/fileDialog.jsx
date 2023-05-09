@@ -28,18 +28,6 @@ export default function FileDialog({
     }
   }
 
-  const getFilesInDirectory = async (dirPath) => {
-    try {
-      const files = await window.api.readdir(dirPath)
-      return files
-      //   .filter((file) => {
-      //     return ['.mp4', '.avi', '.mov'].includes(file.slice(-4))
-      //   })
-    } catch (err) {
-      console.error(err)
-    }
-  }
-
   return (
     <div className={className}>
       {/* Label */}
@@ -56,26 +44,20 @@ export default function FileDialog({
           Choose
         </button>
         <input
-          onChange={(e) => {
-            e.preventDefault()
-          }}
+          value={jobHolder.src_path}
+          onChange={(e) => updateJobHolder('src_path', e.target.value)}
           required={required}
           className="rounded-lg rounded-l-none w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white overflow-auto"
-          value={jobHolder.src_path}
         ></input>
       </div>
 
       {/* Hint */}
-      {hint && (
-        <label htmlFor={name} className="block mb-1 text-xs font-thin text-gray-400">
-          {hint}
-        </label>
-      )}
       <div className="flex justify-between items-center mt-1 gap-1">
         {/* Recursive Checkbox */}
         <label className="inline-flex items-center mr-2">
           <input
-            onChange={(e) => updateJobHolder('dirRecursive', e.target.value)}
+            value={jobHolder.dirRecursive}
+            onChange={(e) => updateJobHolder('dirRecursive', e.target.checked)}
             type="checkbox"
             className="form-checkbox rounded h-5 w-5 text-sky-600 accent-gray-600 bg-gray-700 cursor-pointer transition-all"
           ></input>

@@ -1,7 +1,7 @@
 import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
-import { join, extname } from 'path'
+import { join, extname, relative } from 'path'
 // import { os } from 'os'
-import { readdir, readdirSync, statSync } from 'fs'
+import { readDir, readdirSync, statSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { sqlBridge } from './sqlBridge'
 import icon from '../../resources/icon.png?asset'
@@ -69,50 +69,17 @@ app.whenReady().then(async () => {
     return resPromise
   })
 
-  ipcMain.handle('readdir', async (e, dir, recursive) => {
+  ipcMain.handle('readDir', async (e, dir, fileTypes, recursive) => {
     var res = {
       success: false,
       errMsg: '',
       data: []
     }
     return new Promise((resolve) => {
-      const deepFileList = listFiles(dir, true)
+      const deepFileList = listFiles(dir, dir, fileTypes, recursive)
       res.success = true
       res.data = deepFileList
       resolve(res)
-      // readdir(dir, (err, foundFNames) => {
-      //   if (!err) {
-      //     const masterList = []
-      //     foundFNames.forEach((fName) => {
-      //       const fullPath = join(dir, fName)
-      //       const fStats = statSync(fullPath)
-      //       // If file, push to masterList
-      //       if (fStats.isFile()) {
-      //         masterList.push({
-      //           fileFullPath: fullPath,
-      //           fileDirName: dir,
-      //           fName: fName,
-      //           fileExtName: extname(fName),
-      //           isFile: fStats.isFile(),
-      //           accessTime: fStats.atime,
-      //           changeTime: fStats.ctime,
-      //           modifiedTime: fStats.mtime,
-      //           createdTime: fStats.birthtime
-      //         })
-      //       }
-      //       else if (recursive && fStats.isDirectory()) {
-      //         // Else, rcursively add children
-      //         const subDirFiles = listFiles(fullPath, true)
-      //       }
-      //     })
-      //     res.success = true
-      //     res.data = masterList
-      //     resolve(res)
-      //   } else {
-      //     res.errMsg = err.message
-      //     resolve(res)
-      //   }
-      // })
     })
   })
 
@@ -128,27 +95,31 @@ app.on('window-all-closed', () => {
   }
 })
 
-function listFiles(directory, recursive = false) {
+function listFiles(baseDir, directory, fileTypes, recursive = false) {
   const files = []
 
   const filesInDirectory = readdirSync(directory)
   for (const fName of filesInDirectory) {
     const fullPath = join(directory, fName)
+    const relativePath = relative(baseDir, fullPath)
     const fStats = statSync(fullPath)
     if (fStats.isDirectory() && recursive) {
-      files.push(...listFiles(fullPath, recursive))
+      files.push(...listFiles(baseDir, fullPath, fileTypes, recursive))
     } else {
-      files.push({
-        fileFullPath: fullPath,
-        fileDirName: directory,
-        fName: fName,
-        fileExtName: extname(fName),
-        isFile: fStats.isFile(),
-        accessTime: fStats.atime,
-        changeTime: fStats.ctime,
-        modifiedTime: fStats.mtime,
-        createdTime: fStats.birthtime
-      })
+      if (fileTypes.includes(extname(fName))) {
+        files.push({
+          fullPath: fullPath,
+          relativePath: relativePath,
+          dirName: directory,
+          name: fName,
+          extName: extname(fName),
+          isFile: fStats.isFile(),
+          accessTime: fStats.atime,
+          changeTime: fStats.ctime,
+          modifiedTime: fStats.mtime,
+          createdTime: fStats.birthtime
+        })
+      }
     }
   }
 

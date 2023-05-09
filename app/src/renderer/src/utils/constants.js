@@ -65,7 +65,7 @@ export const INIT_JOB = {
   dest_path: '',
   src_platform: '',
   dest_platform: '',
-  file_types: MEDIA_TYPES,
+  fileTypes: MEDIA_TYPES,
   dirRecursive: false,
   fileList: []
 }
