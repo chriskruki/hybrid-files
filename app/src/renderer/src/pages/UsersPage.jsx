@@ -6,7 +6,7 @@ import LeftIsland from '../components/LeftIsland'
 import StaticModal from '../components/StaticModal'
 import FormInput from '../components/FormInput'
 import RowDropdown from '../components/RowDropdown'
-import UsersTable from '../components/UsersTable'
+import UsersTable from '../components/tables/UsersTable'
 
 export default function UsersPage({ currPage, setCurrPage }) {
   const pageVisible = currPage === PAGES.USERS
@@ -272,6 +272,7 @@ export default function UsersPage({ currPage, setCurrPage }) {
             Refresh Data
           </button>
           <StaticModal
+            closeOnClick
             open={modalOpen}
             setOpen={setModalOpen}
             title={modalTitle}
@@ -294,7 +295,7 @@ export default function UsersPage({ currPage, setCurrPage }) {
         <div className="flex flex-col flex-1 gap-4">
           <NavBar currPage={currPage} setCurrPage={setCurrPage} />
           <div className="flex flex-1 overflow-auto paragraph island max-h-100">
-            <UsersTable userList={userList} dropdownElems={dropdownElems}/>
+            <UsersTable userList={userList} dropdownElems={dropdownElems} />
           </div>
         </div>
       </Fragment>

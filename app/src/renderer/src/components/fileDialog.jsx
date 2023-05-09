@@ -1,22 +1,27 @@
 import { useState } from 'react'
 
-export default function FileDialog({ jobHolder, updateJobHolder, className, label, name, hint }) {
+export default function FileDialog({
+  jobHolder,
+  updateJobHolder,
+  className,
+  label,
+  name,
+  hint,
+  required
+}) {
   const [fileList, setFileList] = useState([])
 
-  const handleOpenDialog = async () => {
+  const handleOpenDialog = async (e) => {
+    e.preventDefault()
     try {
       const params = {
         title: 'Select a media folder',
         buttonLabel: 'Select',
         properties: ['openDirectory']
-        // properties: ['openDirectory', 'multiSelections']
       }
       const selectedDirs = await window.api.openDialog(params)
-      // console.log(selectedDirs)
       if (selectedDirs) {
-        updateJobHolder('selectedDir', selectedDirs[0])
-        const files = await getFilesInDirectory(selectedDirs[0])
-        setFileList(files)
+        updateJobHolder('src_path', selectedDirs[0])
       }
     } catch (err) {
       console.error(err)
@@ -42,17 +47,22 @@ export default function FileDialog({ jobHolder, updateJobHolder, className, labe
         {label}
       </label>
       {/* Dir Select Section */}
-      <div className="flex gap-1">
+      <div className="flex">
         <button
           id={name}
-          className="rounded-lg w-fit p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white text-sm"
+          className="rounded-lg rounded-r-none border-r border-r-gray-300 w-fit p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white text-sm"
           onClick={handleOpenDialog}
         >
           Choose
         </button>
-        <div className="rounded-lg w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white overflow-auto">
-          {jobHolder.selectedDir}
-        </div>
+        <input
+          onChange={(e) => {
+            e.preventDefault()
+          }}
+          required={required}
+          className="rounded-lg rounded-l-none w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white overflow-auto"
+          value={jobHolder.src_path}
+        ></input>
       </div>
 
       {/* Hint */}
@@ -61,39 +71,17 @@ export default function FileDialog({ jobHolder, updateJobHolder, className, labe
           {hint}
         </label>
       )}
-      <div className="flex justify-between items-center mt-1">
+      <div className="flex justify-between items-center mt-1 gap-1">
         {/* Recursive Checkbox */}
         <label className="inline-flex items-center mr-2">
           <input
             onChange={(e) => updateJobHolder('dirRecursive', e.target.value)}
             type="checkbox"
-            className="rounded h-5 w-5 text-gray-600 accent-gray-900 bg-gray-600"
+            className="form-checkbox rounded h-5 w-5 text-sky-600 accent-gray-600 bg-gray-700 cursor-pointer transition-all"
           ></input>
           <span className="ml-2 font-thin text-sm text-white">Traverse Recursively</span>
         </label>
-        {/* File Count */}
-        <label htmlFor={name} className="block mb-1 text-xs font-thin text-gray-400">
-          {fileList.length} files selected
-        </label>
       </div>
-      {/* {selectedDir && (
-        <div>
-          <h2>Selected Directory:</h2>
-          <p>{selectedDir}</p>
-        </div>
-      )}
-      {fileList.length > 0 && (
-        <div>
-          <h2>Files:</h2>
-          <ul>
-            <pre>
-              {fileList.map((file, index) => (
-                <li key={index}>{JSON.stringify(file, null, 2)}</li>
-              ))}
-            </pre>
-          </ul>
-        </div>
-      )} */}
     </div>
   )
 }

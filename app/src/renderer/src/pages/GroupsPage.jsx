@@ -2,11 +2,11 @@ import { Fragment, useEffect, useState } from 'react'
 import NavBar from '../components/NavBar'
 import { INIT_GROUP, PAGES } from '../utils/constants'
 import { useSqlSettings, useSqlSettingsUpdate } from '../context/SqlContext'
-import DarkTable from '../components/HyTable'
+import DarkTable from '../components/tables/HyTable'
 import LeftIsland from '../components/LeftIsland'
 import StaticModal from '../components/StaticModal'
 import FormInput from '../components/FormInput'
-import GroupsTable from '../components/GroupsTable'
+import GroupsTable from '../components/tables/GroupsTable'
 import RowDropdown from '../components/RowDropdown'
 
 export default function GroupsPage({ currPage, setCurrPage }) {
@@ -214,10 +214,7 @@ export default function GroupsPage({ currPage, setCurrPage }) {
     deleteGroupContent: (
       <div className="flex flex-col max-w-[500px] gap-2">
         <div className="flex gap-2">
-          <button
-            className="btn p-2 w-full bg-green-600"
-            onClick={deleteGroup}
-          >
+          <button className="btn p-2 w-full bg-green-600" onClick={deleteGroup}>
             Confirm
           </button>
           <button
@@ -275,6 +272,7 @@ export default function GroupsPage({ currPage, setCurrPage }) {
             Refresh Data
           </button>
           <StaticModal
+            closeOnClick
             open={modalOpen}
             setOpen={setModalOpen}
             title={modalTitle}
@@ -297,7 +295,7 @@ export default function GroupsPage({ currPage, setCurrPage }) {
         <div className="flex flex-col flex-1 gap-4">
           <NavBar currPage={currPage} setCurrPage={setCurrPage} />
           <div className="flex flex-1 overflow-y-auto paragraph island">
-            <GroupsTable groupList={groupList} dropdownElems={dropdownElems}/>
+            <GroupsTable groupList={groupList} dropdownElems={dropdownElems} />
           </div>
         </div>
       </Fragment>

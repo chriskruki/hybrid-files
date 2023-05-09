@@ -1,7 +1,7 @@
 import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join, extname } from 'path'
 // import { os } from 'os'
-import { readdir, statSync } from 'fs'
+import { readdir, readdirSync, statSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { sqlBridge } from './sqlBridge'
 import icon from '../../resources/icon.png?asset'
@@ -43,7 +43,7 @@ function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then( async() => {
+app.whenReady().then(async () => {
   electronApp.setAppUserModelId('com.electron')
   // Windows specific - load React Dev Tools
   // if (is.dev) {
@@ -69,31 +69,50 @@ app.whenReady().then( async() => {
     return resPromise
   })
 
-  ipcMain.handle('readdir', async (e, filePath) => {
-    return new Promise((resolve, reject) => {
-      readdir(filePath, (err, foundFiles) => {
-        if (err) {
-          reject({
-            error: err
-          })
-        } else {
-          const fileStruct = foundFiles.map((fileName) => {
-            const fullPath = join(filePath, fileName)
-            const stats = statSync(fullPath)
-            return {
-              fileFullPath: fullPath,
-              fileDirName: filePath,
-              fileName: fileName,
-              fileExtName: extname(fileName),
-              accessTime: stats.atime,
-              changeTime: stats.ctime,
-              modifiedTime: stats.mtime,
-              createdTime: stats.birthtime
-            }
-          })
-          resolve(fileStruct)
-        }
-      })
+  ipcMain.handle('readdir', async (e, dir, recursive) => {
+    var res = {
+      success: false,
+      errMsg: '',
+      data: []
+    }
+    return new Promise((resolve) => {
+      const deepFileList = listFiles(dir, true)
+      res.success = true
+      res.data = deepFileList
+      resolve(res)
+      // readdir(dir, (err, foundFNames) => {
+      //   if (!err) {
+      //     const masterList = []
+      //     foundFNames.forEach((fName) => {
+      //       const fullPath = join(dir, fName)
+      //       const fStats = statSync(fullPath)
+      //       // If file, push to masterList
+      //       if (fStats.isFile()) {
+      //         masterList.push({
+      //           fileFullPath: fullPath,
+      //           fileDirName: dir,
+      //           fName: fName,
+      //           fileExtName: extname(fName),
+      //           isFile: fStats.isFile(),
+      //           accessTime: fStats.atime,
+      //           changeTime: fStats.ctime,
+      //           modifiedTime: fStats.mtime,
+      //           createdTime: fStats.birthtime
+      //         })
+      //       }
+      //       else if (recursive && fStats.isDirectory()) {
+      //         // Else, rcursively add children
+      //         const subDirFiles = listFiles(fullPath, true)
+      //       }
+      //     })
+      //     res.success = true
+      //     res.data = masterList
+      //     resolve(res)
+      //   } else {
+      //     res.errMsg = err.message
+      //     resolve(res)
+      //   }
+      // })
     })
   })
 
@@ -108,3 +127,30 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
+function listFiles(directory, recursive = false) {
+  const files = []
+
+  const filesInDirectory = readdirSync(directory)
+  for (const fName of filesInDirectory) {
+    const fullPath = join(directory, fName)
+    const fStats = statSync(fullPath)
+    if (fStats.isDirectory() && recursive) {
+      files.push(...listFiles(fullPath, recursive))
+    } else {
+      files.push({
+        fileFullPath: fullPath,
+        fileDirName: directory,
+        fName: fName,
+        fileExtName: extname(fName),
+        isFile: fStats.isFile(),
+        accessTime: fStats.atime,
+        changeTime: fStats.ctime,
+        modifiedTime: fStats.mtime,
+        createdTime: fStats.birthtime
+      })
+    }
+  }
+
+  return files
+}

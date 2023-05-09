@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import HyTable, { HyRow, StyledTableCell, StyledTableRow } from '../components/HyTable'
+import HyTable, { HyRow, StyledTableCell, StyledTableRow } from './HyTable'
 
 export default function UsersTable({ userList, dropdownElems }) {
   const subHeader = (

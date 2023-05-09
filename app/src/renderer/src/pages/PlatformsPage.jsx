@@ -5,7 +5,7 @@ import { useSqlSettings, useSqlSettingsUpdate } from '../context/SqlContext'
 import LeftIsland from '../components/LeftIsland'
 import StaticModal from '../components/StaticModal'
 import FormInput from '../components/FormInput'
-import PlatformsTable from '../components/PlatformsTable'
+import PlatformsTable from '../components/tables/PlatformsTable'
 import RowDropdown from '../components/RowDropdown'
 import FormSelect from '../components/FormSelect'
 
@@ -326,6 +326,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
             Refresh Data
           </button>
           <StaticModal
+            closeOnClick
             open={modalOpen}
             setOpen={setModalOpen}
             title={modalTitle}

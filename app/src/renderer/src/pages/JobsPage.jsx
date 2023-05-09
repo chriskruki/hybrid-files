@@ -5,12 +5,12 @@ import { useSqlSettings, useSqlSettingsUpdate } from '../context/SqlContext'
 import LeftIsland from '../components/LeftIsland'
 import StaticModal from '../components/StaticModal'
 import FormInput from '../components/FormInput'
-import PlatformsTable from '../components/PlatformsTable'
 import RowDropdown from '../components/RowDropdown'
-import JobsTable from '../components/JobsTable'
+import JobsTable from '../components/tables/JobsTable'
 import FormSelect from '../components/FormSelect'
 import FileDialog from '../components/fileDialog'
-import MultipleSelectChip from '../components/MultiSelect'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons'
 
 export default function JobsPage({ currPage, setCurrPage }) {
   const pageVisible = currPage === PAGES.JOBS
@@ -42,9 +42,9 @@ export default function JobsPage({ currPage, setCurrPage }) {
   }
 
   const updateJobHolder = (key, val) => {
-    if (!(key in jobHolder)) {
-      console.error(`Key [${key}] error in jobHolder update`)
-    }
+    // if (!(key in jobHolder)) {
+    //   console.error(`Key [${key}] error in jobHolder update`)
+    // }
     setJobHolder((prev) => {
       return {
         ...prev,
@@ -111,8 +111,8 @@ export default function JobsPage({ currPage, setCurrPage }) {
     }
   }
 
-  // Edit a platform
-  const editPlaform = (e) => {
+  // Edit a job - if not yet run
+  const editJob = (e) => {
     e.preventDefault()
     const payload = jobHolder
     try {
@@ -138,7 +138,7 @@ export default function JobsPage({ currPage, setCurrPage }) {
     }
   }
 
-  // Insert new platform
+  // Insert new job
   const insertJob = (e) => {
     e.preventDefault()
     const payload = jobHolder
@@ -165,109 +165,194 @@ export default function JobsPage({ currPage, setCurrPage }) {
     }
   }
 
+  const onNewJobSubmit = (e) => {
+    e.preventDefault()
+    console.log('submit!')
+    setResMsg('')
+    setModalContentKey('orchestrateLocalIndex')
+    setModalOpen(true)
+    setModalTitle(`Orchestrate Job`)
+  }
+
   // Store modal contents in list for refernce (breaks if using state)
   const modalContentList = {
     newJobContent: (
-      <div className="flex flex-col justify-center items-center max-w-[500px] gap-4">
-        {/* Basic Info Section */}
-        <div className="grid grid-cols-2 w-full gap-4 justify-center items-start">
-          <FormInput
-            label="Name"
-            hint="Name of the job - custom"
-            name="name"
-            type="text"
-            value={jobHolder.name}
-            onChange={(e) => {
-              updateJobHolder('name', e.target.value)
-            }}
-          />
-          <FormSelect
-            label={'Type'}
-            name={'job_type'}
-            value={jobHolder.type}
-            onChange={(e) => {
-              e.preventDefault()
-              updateJobHolder('type', e.target.value)
-            }}
-            options={
-              <Fragment>
-                <option></option>
-                <option value="local_index">Local Index</option>
-                <option disabled value="platform_transition">
-                  Platform Transition
-                </option>
-              </Fragment>
-            }
-          />
-          <h1 className={`overflow-auto max-w-[200px] m-0 text-center`}>{resMsg}</h1>
-        </div>
-        {/* Local Index Section */}
-        {jobHolder.type === 'local_index' && (
-          <div className="flex flex-col fade-in w-full h-full gap-4 ">
-            <div className="w-full flex justify-between items-center gap-4">
-              <FormSelect
-                label="Src Platform"
-                hint="Source Platform"
-                name="src_platform"
-                value={jobHolder.src_platform}
-                className="w-1/2 h-full"
-                onChange={(e) => {
-                  updateJobHolder('name', e.target.value)
-                }}
-                options={localPlatformList.map((val) => {
-                  return (
-                    <option key={val.platform_id} value={val.platform_id}>
-                      {val.name}
-                    </option>
-                  )
-                })}
-              />
-              <FormSelect
-                label="File Groups"
-                hint="Groups that can see the ingested files"
-                name="job_group"
-                value={jobHolder.job_group}
-                className="w-1/2 h-full"
-                onChange={(e) => {
-                  updateJobHolder('job_group', e.target.value)
-                }}
-                options={groupList.map((val) => {
-                  return (
-                    <option key={val.group_id} value={val.group_id}>
-                      {val.name}
-                    </option>
-                  )
-                })}
-              />
-            </div>
-            <div className="w-full">
-              <label htmlFor={name} className="block text-sm mb-1 font-medium text-white">
-                Media Types
-              </label>
-              <div className="flex justify-center rounded-lg w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white flex gap-1 overflow-auto">
-                {MEDIA_TYPES.map((val) => {
-                  return (
-                    <div key={val} className="rounded p-1 bg-gray-500">
-                      {val}
-                    </div>
-                  )
-                })}
+      <form onSubmit={onNewJobSubmit}>
+        <div className="flex flex-col justify-center items-center max-w-[500px] gap-4">
+          {/* Basic Info Section */}
+          <div className="grid grid-cols-2 w-full gap-4 justify-center items-start">
+            <FormInput
+              label="Name"
+              hint="Name of the job - custom"
+              name="name"
+              type="text"
+              required
+              value={jobHolder.name}
+              onChange={(e) => {
+                updateJobHolder('name', e.target.value)
+              }}
+            />
+            <FormSelect
+              label={'Type'}
+              name={'job_type'}
+              value={jobHolder.type}
+              required
+              onChange={(e) => {
+                e.preventDefault()
+                updateJobHolder('type', e.target.value)
+              }}
+              options={
+                <Fragment>
+                  <option></option>
+                  <option value="local_index">Local Index</option>
+                  <option disabled value="platform_transition">
+                    Platform Transition
+                  </option>
+                </Fragment>
+              }
+            />
+            <h1 className={`overflow-auto max-w-[200px] m-0 text-center`}>{resMsg}</h1>
+          </div>
+          {/* Local Index Section */}
+          {jobHolder.type === 'local_index' && (
+            <div className="flex flex-col fade-in w-full h-full gap-4 ">
+              <div className="w-full flex justify-between items-center gap-4">
+                <FormSelect
+                  label="Local Platform"
+                  hint="Platform that files reside on"
+                  name="src_platform"
+                  className="w-1/2 h-full"
+                  required
+                  value={jobHolder.src_platform}
+                  onChange={(e) => {
+                    updateJobHolder('src_platform', e.target.value)
+                  }}
+                  options={localPlatformList.map((val) => {
+                    return (
+                      <option key={val.platform_id} value={val.platform_id}>
+                        {val.name}
+                      </option>
+                    )
+                  })}
+                />
+                <FormSelect
+                  label="File Groups"
+                  hint="Groups that can see the ingested files"
+                  name="job_group"
+                  required
+                  className="w-1/2 h-full"
+                  value={jobHolder.job_group}
+                  onChange={(e) => {
+                    updateJobHolder('job_group', e.target.value)
+                  }}
+                  options={groupList.map((val) => {
+                    return (
+                      <option key={val.group_id} value={val.group_id}>
+                        {val.name}
+                      </option>
+                    )
+                  })}
+                />
               </div>
+              <div className="w-full">
+                <label className="block text-sm mb-1 font-medium text-white">Media Types</label>
+                <div className="flex justify-center rounded-lg w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white gap-1 overflow-auto">
+                  {MEDIA_TYPES.map((val) => {
+                    return (
+                      <div key={val} className="rounded p-1 bg-gray-500">
+                        {val}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+              <FileDialog
+                className="w-full"
+                label={'Directory'}
+                jobHolder={jobHolder}
+                updateJobHolder={updateJobHolder}
+                required
+              />
             </div>
+          )}
+          {/* Submit Buttons */}
+          <div className="flex gap-2 w-full h-full">
+            <button
+              className="fbtn p-2 w-full"
+              onClick={(e) => {
+                e.preventDefault()
+                resetJobHolder()
+                setModalOpen(false)
+              }}
+            >
+              Cancel
+            </button>
+            <button type="submit" className="fbtn p-2 w-full">
+              Save & Stage
+            </button>
+          </div>
+        </div>
+      </form>
+    ),
+    orchestrateLocalIndex: (
+      <Fragment>
+        <div
+          className="absolute top-1 left-2 cursor-pointer hover:text-sky-400 transition-all"
+          onClick={(e) => {
+            e.preventDefault()
+            setModalContentKey('newJobContent')
+          }}
+        >
+          <FontAwesomeIcon icon={faArrowCircleLeft} />
+        </div>
+        <div className="flex flex-col justify-center items-center w-[750px] gap-4">
+          <div className="flex gap-4 w-full justify-center items-center">
             <FileDialog
-              className="w-full"
+              className="w-1/2"
               label={'Directory'}
               jobHolder={jobHolder}
               updateJobHolder={updateJobHolder}
+              required
             />
+            <button
+              className="fbtn p-2 h-fit w-fit"
+              onClick={async (e) => {
+                const res = await window.api.readdir(jobHolder.src_path)
+                updateJobHolder('fileList', res.data)
+              }}
+            >
+              Load Files
+            </button>
           </div>
-        )}
-        <div className="w-1/2 h-full">
-          <button type="submit" className="fbtn p-2 w-full">
-            Stage
-          </button>
+          <div className="flex flex-col overflow-y-auto relative max-h-[300px] border-2 p-2 border-gray-800 rounded overflow">
+            {jobHolder.fileList &&
+              jobHolder.fileList.map((val, idx) => {
+                return (
+                  <pre key={idx}>
+                    <div >{JSON.stringify(val, null, 2)}</div>
+                  </pre>
+                  // <HyTable>
+                )
+              })}
+          </div>
+          {/* Bottom Buttons */}
+          <div className="flex gap-2 w-1/2">
+            <button
+              className="fbtn p-2 flex-1"
+              onClick={(e) => {
+                e.preventDefault()
+                resetJobHolder()
+                setModalOpen(false)
+              }}
+            >
+              Cancel
+            </button>
+            <button type="submit" className="fbtn p-2 flex-1">
+              Commit
+            </button>
+          </div>
         </div>
-      </div>
+      </Fragment>
     )
   }
 
