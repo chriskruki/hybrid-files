@@ -22,6 +22,7 @@ export default function FormSelect({
         defaultValue={value}
         required={required}
       >
+        <option></option>
         {options}
       </select>
       {hint && (

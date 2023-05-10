@@ -249,28 +249,23 @@ export const sqlBridge = {
     return GETQueryPromise(query)
   },
   insertJob: async (payload) => {
+    const query = `
+    INSERT INTO job (name, type, status, src_path, src_platform, date_started, date_finished)
+    VALUES ('${payload.name}', '${payload.type}', '${payload.status}', '${payload.src_path}', '${payload.src_platform}', '${sqlDateFormat(payload.date_started)}', '${sqlDateFormat(payload.date_finished)}');`
+    return PUTQueryPromise(query)
+  },
+  runJob: async (payload) => {
     var fileInsertsList = payload.fileList.map((f) => {
       return `(@job_id, '${payload.src_platform}', '${f.name}', '${f.fullPath}', '${f.size}', '${f.createdTime}', '${f.modifiedTime}')`
     })
     var fileInsertsStr = fileInsertsList.join(', ')
-    console.log(fileInsertsStr)
+  },
+  deleteJob: async (payload) => {
     const query = `
-    START TRANSACTION;
-
-
-    INSERT INTO \`job\` (name, type, status, src_path, src_platform, date_started, date_finished)
-    VALUES ('${payload.name}', '${payload.type}', '${payload.status}', '${payload.src_path}', '${payload.src_platform}', '${payload.date_started}', '${payload.date_finished}');
-
-    SET @job_id = LAST_INSERT_ID();
-
-    INSERT INTO file_group (group_name, group_description, job_id) VALUES ('Test Group', 'This is a test group.', @job_id);
-    
-    INSERT INTO file_platform (platform_name, platform_description, group_id) VALUES ('Test Platform', 'This is a test platform.', @group_id);
-    
-    COMMIT;
+      DELETE FROM job
+      WHERE job_id='${payload.job_id}'
     `
-
-    return PUTQueryPromise(query)
+    return DELETEQueryPromise(query)
   },
 }
 
@@ -365,4 +360,8 @@ const PUTQueryPromise = (query, successCallback) => {
       resolve(res)
     }
   })
+}
+
+const sqlDateFormat = (dateStr) => {
+  return new Date(dateStr).toISOString().slice(0, 19).replace('T', ' ');
 }

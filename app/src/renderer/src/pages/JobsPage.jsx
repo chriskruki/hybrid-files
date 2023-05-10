@@ -125,7 +125,7 @@ export default function JobsPage({ currPage, setCurrPage }) {
         .sqlBridge('insertJob', payload)
         .then((res) => {
           if (res.success) {
-            updateSqlSettings('log', `Job ${payload.name} success`, true)
+            updateSqlSettings('log', `Job ${payload.name} created`, true)
             getJobs(false)
             setModalOpen(false)
             resetJobHolder()
@@ -143,10 +143,37 @@ export default function JobsPage({ currPage, setCurrPage }) {
     }
   }
 
+  // Delete user
+  const deleteJob = (e) => {
+    e.preventDefault()
+    const payload = jobHolder
+    try {
+      window.api
+        .sqlBridge('deleteJob', payload)
+        .then((res) => {
+          if (res.success) {
+            updateSqlSettings('log', `Job ${payload.name} deleted`, true)
+            getJobs(false)
+            setModalOpen(false)
+            resetJobHolder()
+          } else {
+            updateSqlSettings('log', 'Job deletion failed', false)
+            setResMsg(`Job deletion failed: ${res.errMsg}`)
+          }
+        })
+        .catch((reason) => {
+          setResMsg(reason)
+        })
+    } catch (e) {
+      updateSqlSettings('log', 'Sql Bridge access error', false)
+      setModalOpen(false)
+    }
+  }
+
   const onNewJobSubmit = (e) => {
     e.preventDefault()
     setResMsg('')
-    setModalContentKey('orchestrateLocalIndex')
+    setModalContentKey('stageLocalIndex')
     setModalOpen(true)
     setModalTitle(`Orchestrate Job`)
     updateJobHolder('fileTypes', MEDIA_TYPES)
@@ -196,7 +223,6 @@ export default function JobsPage({ currPage, setCurrPage }) {
               }}
               options={
                 <Fragment>
-                  <option></option>
                   <option value="local_index">Local Index</option>
                   <option disabled value="platform_transition">
                     Platform Transition
@@ -280,7 +306,7 @@ export default function JobsPage({ currPage, setCurrPage }) {
         </div>
       </form>
     ),
-    orchestrateLocalIndex: (
+    stageLocalIndex: (
       <Fragment>
         <div
           className="absolute top-1 left-2 cursor-pointer hover:text-sky-400 transition-all"
@@ -316,11 +342,11 @@ export default function JobsPage({ currPage, setCurrPage }) {
               className="fbtn p-2 flex-1"
               onClick={(e) => {
                 e.preventDefault()
-                resetJobHolder()
-                setModalOpen(false)
+                setModalContentKey('newJobContent')
+                setModalTitle('New Job')
               }}
             >
-              Cancel
+              Back
             </button>
             <button onClick={commitFiles} className="fbtn p-2 flex-1">
               Commit
@@ -329,6 +355,27 @@ export default function JobsPage({ currPage, setCurrPage }) {
           <h1 className={`overflow-auto w-full text-red-400 m-0 text-center`}>{resMsg}</h1>
         </div>
       </Fragment>
+    ),
+    deleteJobContent: (
+      <div className="flex flex-col max-w-[500px] gap-2">
+        <div className="flex gap-2">
+          <button onClick={deleteJob} className="btn p-2 w-full bg-green-600">
+            Confirm
+          </button>
+          <button
+            onClick={() => {
+              setModalOpen(false)
+              resetJobHolder()
+            }}
+            className="btn p-2 w-full bg-red-600"
+          >
+            Cancel
+          </button>
+        </div>
+        <div className="flex">
+          <h1 className={`max-w-[200px] m-0 text-center`}>{resMsg}</h1>
+        </div>
+      </div>
     )
   }
 
@@ -338,13 +385,25 @@ export default function JobsPage({ currPage, setCurrPage }) {
         className="btn w-full text-sm text-gray-300 border-sky-700 border rounded p-2 flex gap-2 justify-center items-center relative"
         onClick={() => {
           setResMsg('')
-          setModalContentKey('orchestrateLocalIndex')
+          setModalContentKey('stageLocalIndex')
           setModalOpen(true)
           setModalTitle(`Edit Job '${rowInfo.name}'`)
           setJobHolder(rowInfo)
         }}
       >
         Edit
+      </button>
+      <button
+        className="btn w-full text-sm text-gray-300 border-sky-700 border rounded p-2 flex gap-2 justify-center items-center relative"
+        onClick={() => {
+          setResMsg('')
+          setModalContentKey('deleteJobContent')
+          setModalOpen(true)
+          setModalTitle(`Delete Job '${rowInfo.name}'?`)
+          setJobHolder(rowInfo)
+        }}
+      >
+        Delete
       </button>
     </RowDropdown>
   )

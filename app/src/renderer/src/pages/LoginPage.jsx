@@ -109,7 +109,7 @@ export default function LoginPage({ currPage, setCurrPage }) {
               </p>
             </div>
           </form>
-          {`${userInfo.username} ${userInfo.password}`}
+          {/* {`${userInfo.username} ${userInfo.password}`} */}
         </div>
       </div>
     )
