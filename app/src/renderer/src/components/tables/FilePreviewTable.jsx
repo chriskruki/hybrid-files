@@ -9,7 +9,7 @@ export default function FilePreviewTable({ dataList }) {
     </StyledTableRow>
   )
 
-  const mainRow = (row) => {
+  const mainBody = (row) => {
     const dateString = row.createdTime
     const dateObject = new Date(dateString)
     const formattedDate = dateObject.toLocaleString('en-US', { timeZone: 'UTC' })
@@ -22,7 +22,7 @@ export default function FilePreviewTable({ dataList }) {
     )
   }
 
-  const tableBody = dataList.map((row, idx) => <HyRow key={idx} row={row} mainRow={mainRow} />)
+  const tableBody = dataList.map((row, idx) => <HyRow key={idx} row={row} mainBody={mainBody} />)
 
   return <HyTable dataList={dataList} header={tableHeader} body={tableBody} />
 }

@@ -2,7 +2,7 @@ import { Fragment } from 'react'
 import HyTable, { HyRow, StyledTableCell, StyledTableRow } from './HyTable'
 
 export default function JobsTable({ jobList, dropdownElems }) {
-  const mainRow = (row) => (
+  const mainBody = (row) => (
     <Fragment>
       <StyledTableCell>{row.job_id}</StyledTableCell>
       <StyledTableCell>{row.name}</StyledTableCell>
@@ -43,6 +43,7 @@ export default function JobsTable({ jobList, dropdownElems }) {
   )
 
   const tableBody =
-    jobList && jobList.map((row) => <HyRow key={row.user_id} row={row} mainRow={mainRow} />)
+    jobList && jobList.map((row) => <HyRow key={row.user_id} row={row} mainBody={mainBody} />)
+
   return <HyTable dataList={jobList} header={tableHeader} body={tableBody} />
 }

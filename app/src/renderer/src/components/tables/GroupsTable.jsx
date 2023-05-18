@@ -12,7 +12,7 @@ export default function GroupsTable({ groupList, dropdownElems }) {
     </StyledTableRow>
   )
 
-  const mainRow = (row) => (
+  const mainBody = (row) => (
     <Fragment>
       <StyledTableCell component="th" scope="row">
         {row.group_id}
@@ -24,7 +24,7 @@ export default function GroupsTable({ groupList, dropdownElems }) {
   )
 
   const tableBody = groupList.map((row) => (
-    <HyRow key={row.group_id} row={row} mainRow={mainRow} />
+    <HyRow key={row.group_id} row={row} mainBody={mainBody} />
   ))
 
   return <HyTable dataList={groupList} header={tableHeader} body={tableBody} />

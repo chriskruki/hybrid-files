@@ -103,16 +103,19 @@ function listFiles(baseDir, directory, fileTypes, recursive = false) {
     const fullPath = join(directory, fName)
     const relativePath = relative(baseDir, fullPath)
     const fStats = statSync(fullPath)
+    const fExt = extname(fName).toLowerCase()
     if (fStats.isDirectory() && recursive) {
       files.push(...listFiles(baseDir, fullPath, fileTypes, recursive))
     } else {
-      if (fileTypes.includes(extname(fName))) {
+      console.log(extname(fName))
+      // Validate filetypes
+      if (fileTypes.includes(fExt)) {
         files.push({
           fullPath: fullPath,
           relativePath: relativePath,
           dirName: directory,
           name: fName,
-          extName: extname(fName),
+          extName: fExt,
           size: fStats.size,
           isFile: fStats.isFile(),
           accessTime: fStats.atime,

@@ -249,10 +249,7 @@ export const sqlBridge = {
     return GETQueryPromise(query)
   },
   insertJob: async (payload) => {
-    const query = `
-    INSERT INTO job (name, type, status, src_path, src_platform, date_started, date_finished)
-    VALUES ('${payload.name}', '${payload.type}', '${payload.status}', '${payload.src_path}', '${payload.src_platform}', '${sqlDateFormat(payload.date_started)}', '${sqlDateFormat(payload.date_finished)}');`
-    return PUTQueryPromise(query)
+    orchestrateFileJob(payload)
   },
   runJob: async (payload) => {
     var fileInsertsList = payload.fileList.map((f) => {
@@ -354,6 +351,66 @@ const PUTQueryPromise = (query, successCallback) => {
         }
         resolve(res)
       })
+    } catch (e) {
+      res.success = false
+      res.errMsg = e.message
+      resolve(res)
+    }
+  })
+}
+
+const orchestrateFileJob = (payload) => {
+  const jobQuery = `
+    INSERT INTO job (name, type, status, src_path, src_platform, date_started, date_finished)
+    VALUES (
+    '${payload.name}', 
+    '${payload.type}', 
+    '${payload.status}', 
+    '${payload.src_path}', 
+    '${payload.src_platform}', 
+    '${sqlDateFormat(payload.date_started)}', 
+    '${sqlDateFormat(payload.date_finished)}'
+  );`
+
+  return new Promise((resolve) => {
+    var res = {
+      success: false,
+      errMsg: '',
+    }
+    if (!bridge.connected) {
+      res.success = false
+      res.errMsg = 'Connection not established!'
+      resolve(res)
+    }
+    try {
+      // Insert Job
+      bridge.con.query(jobQuery, (err, data) => {
+        if (err) {
+          res.success = false
+          res.errMsg = err.message
+          resolve(res)
+        } else {
+          res.success = true
+        }
+        // Rollback if failed
+        if (!res.success) {
+          bridge.con.rollback()
+          resolve(res)
+        }
+      })
+
+      // Insert files
+      payload.fileList.forEach((fileRow) => {
+        bridge.con.query(`
+        SELECT LAST_INSERT_ID INTO @last_row_id;
+        CALL PROCEDURE insert_file(
+          @last_row_id,
+          ${fileRow}
+        )
+    `)
+      })
+      bridge.con.commit()
+      // bridge.con.rollback()
     } catch (e) {
       res.success = false
       res.errMsg = e.message

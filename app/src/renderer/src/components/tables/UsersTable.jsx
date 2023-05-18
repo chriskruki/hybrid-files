@@ -20,7 +20,7 @@ export default function UsersTable({ userList, dropdownElems }) {
     ))
   }
 
-  const mainRow = (row) => (
+  const mainBody = (row) => (
     <Fragment>
       <StyledTableCell component="th" scope="row">
         {row.user_id}
@@ -47,7 +47,7 @@ export default function UsersTable({ userList, dropdownElems }) {
       <HyRow
         key={row.user_id}
         row={row}
-        mainRow={mainRow}
+        mainBody={mainBody}
         subLabel={'User Groups'}
         subHeader={subHeader}
         subBody={subBody}

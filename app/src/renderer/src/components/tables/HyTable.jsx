@@ -52,19 +52,22 @@ const blankRow = (
   </Fragment>
 )
 
-export function HyRow({ row, mainRow, subLabel, subHeader, subBody } ) {
+export function HyRow({ row, mainBody, subLabel, subHeader, subBody } ) {
   const [open, setOpen] = React.useState(false)
 
   return (
     <React.Fragment>
-      <StyledTableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+      <StyledTableRow x={{ '& > *': { borderBottom: 'unset' } }}>
+        {/* Expand Icon */}
         {subLabel && (<StyledTableCell sx={{width: '75px'}}>
           <IconButton sx={{color: 'white', disabled: row.groups.length > 0}} aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </StyledTableCell>)}
-        {mainRow(row)}
+        {/* Rest of Row Body */}
+        {mainBody(row)}
       </StyledTableRow>
+      {/* Sub Table if subLabel passed */}
       {subLabel && (<StyledTableRow>
         <StyledTableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>

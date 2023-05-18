@@ -11,14 +11,13 @@ Open MySQL Command line as root user
 SOURCE project_path/schema.sql
 ```
 
+Where `project_path` is the path to this project
+
 Windows Example - Path must use forward slashes, unquoted, spaces allowed
 
 ```sql
 SOURCE C:/Users/bissu/gitlab/hybrid-files/schema.sql;
 ```
-
-
-Where `project_path` is the path to this project
 
 ### Dev Setup
 

@@ -11,7 +11,7 @@ import GroupsPage from './pages/GroupsPage'
 import GradientLayout from './layouts/GradientLayout'
 
 function App() {
-  const [currPage, setCurrPage] = useState(PAGES.LOGIN)
+  const [currPage, setCurrPage] = useState(PAGES.JOBS)
 
   return (
     <SqlSettingsProvider>

@@ -14,7 +14,7 @@ export default function PlatformsTable({ platformList, dropdownElems }) {
     </StyledTableRow>
   )
 
-  const mainRow = (row) => (
+  const mainBody = (row) => (
     <Fragment>
       <StyledTableCell component="th" scope="row">
         {row.platform_id}
@@ -28,7 +28,7 @@ export default function PlatformsTable({ platformList, dropdownElems }) {
   )
 
   const tableBody = platformList.map((row) => (
-    <HyRow key={row.platform_id} row={row} mainRow={mainRow} />
+    <HyRow key={row.platform_id} row={row} mainBody={mainBody} />
   ))
 
   return <HyTable dataList={platformList} header={tableHeader} body={tableBody} />
