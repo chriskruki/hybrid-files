@@ -67,9 +67,9 @@ $ npm run build:linux
 | 8 | One query must perform an aggregation/group-by clause | Not started |
 | 9 | One query must contain a subquery | Not started |
 | 10 | Two queries must involve joins across at least 3 tables | Not started |
-| 11 | Enforce referential integrality (PK/FK Constraints) | Not started |
+| 11 | Enforce referential integrality (PK/FK Constraints) | Satisfied |
 | 12 | Include Database Views, Indexes | User Groups View |
-| 13 | Use at least 5 entities | All |
+| 13 | Use at least 5 entities | Satisfied |
 
 
 

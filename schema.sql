@@ -52,16 +52,13 @@ CREATE TABLE job_group (
 );
 CREATE TABLE `file` (
     file_id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    job_id INTEGER NOT NULL,
-    -- platform_id INTEGER NOT NULL,
-    `name` VARCHAR(30) NOT NULL,
-    `path` VARCHAR(50) NOT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    `path` VARCHAR(255) NOT NULL,
+    extension VARCHAR(255) NOT NULL,
     size INTEGER NOT NULL,
     date_created TIMESTAMP NOT NULL,
     date_modified TIMESTAMP NOT NULL,
-    date_ingested TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP),
-    FOREIGN KEY fK_file_job (job_id) REFERENCES job(job_id),
-    FOREIGN KEY fK_(platform_id) REFERENCES platform(platform_id)
+    date_ingested TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP)
 );
 CREATE TABLE file_platform (
     file_platform_id INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -77,6 +74,14 @@ CREATE TABLE file_group (
     FOREIGN KEY (file_id) REFERENCES `file`(file_id),
     FOREIGN KEY (group_id) REFERENCES `group`(group_id)
 );
+CREATE TABLE file_job (
+    file_job_id INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    file_id INTEGER NOT NULL,
+    job_id INTEGER NOT NULL,
+    FOREIGN KEY (file_id) REFERENCES `file`(file_id),
+    FOREIGN KEY (job_id) REFERENCES job(job_id)
+);
+
 -- Seed admin group and user
 INSERT INTO `group` (name, description)
 VALUES ('admin', 'All Privileges');
@@ -96,8 +101,8 @@ SELECT u.user_id,
     g.name as group_name,
     g.description as group_description
 FROM user u
-    INNER JOIN user_group ug on u.user_id = ug.user_id
-    INNER JOIN `group` g on ug.group_id = g.group_id;
+    LEFT JOIN user_group ug on u.user_id = ug.user_id
+    LEFT JOIN `group` g on ug.group_id = g.group_id;
 
 CREATE VIEW group_user_info AS
 SELECT g.group_id,
@@ -110,3 +115,34 @@ SELECT g.group_id,
 FROM `group` g
     INNER JOIN user_group ug on g.group_id = ug.group_id
     INNER JOIN user u on ug.user_id = u.user_id;
+
+
+-- Insert file stored procedure
+DELIMITER $$
+CREATE PROCEDURE insert_file (
+    IN in_job_id INT,
+    IN in_platform_id INT,
+    IN in_group_id INT,
+    IN in_name VARCHAR(255),
+    IN in_path VARCHAR(255),
+    IN in_extension VARCHAR(255),
+    IN in_size INT,
+    IN in_date_created TIMESTAMP,
+    IN in_date_modified TIMESTAMP
+)
+BEGIN
+    INSERT INTO `file` (name, path, extension, size, date_created, date_modified, date_ingested)
+        VALUES (in_name, in_path, in_extension, in_size, in_date_created, in_date_modified, CURRENT_TIMESTAMP());
+
+    SELECT LAST_INSERT_ID() INTO @file_id;
+    SELECT @file_id;
+
+    INSERT INTO file_job (file_id, job_id)
+        VALUES (@file_id, in_job_id);
+
+    INSERT INTO file_platform (file_id, platform_id)
+        VALUES (@file_id, in_platform_id);
+
+    INSERT INTO file_group (file_id, group_id)
+        VALUES (@file_id, in_group_id);
+END$$

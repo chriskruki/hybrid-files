@@ -80,7 +80,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
             resetPlatformHolder()
           } else {
             updateSqlSettings('log', 'Platform edit failed', false)
-            setResMsg(`Platform edit failed: ${res.errMsg}`)
+            setResMsg(`Platform edit failed: ${res.errMsg || ''}`)
           }
         })
         .catch((reason) => {
@@ -107,7 +107,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
             resetPlatformHolder()
           } else {
             updateSqlSettings('log', 'Platform creation failed', false)
-            setResMsg(`Platform creation failed: ${res.errMsg}`)
+            setResMsg(`Platform creation failed: ${res.errMsg || ''}`)
           }
         })
         .catch((reason) => {
@@ -134,7 +134,7 @@ export default function PlatformsPage({ currPage, setCurrPage }) {
             resetPlatformHolder()
           } else {
             updateSqlSettings('log', 'Platform deletion failed', false)
-            setResMsg(`Platform deletion failed: ${res.errMsg}`)
+            setResMsg(`Platform deletion failed: ${res.errMsg || ''}`)
           }
         })
         .catch((reason) => {

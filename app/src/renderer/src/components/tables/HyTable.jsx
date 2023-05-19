@@ -93,7 +93,7 @@ export function HyRow({ row, mainBody, subLabel, subHeader, subBody } ) {
 
 export default function HyTable({ dataList, header, body }) {
   return (
-    <TableContainer className="border border-gray-800" component={Paper} sx={{backgroundColor: '#455468'}}>
+    <TableContainer className="border border-gray-800 overflow-auto max-h-full" component={Paper} sx={{backgroundColor: '#455468'}}>
       <Table aria-label="collapsible table">
         <TableHead>
           {header}

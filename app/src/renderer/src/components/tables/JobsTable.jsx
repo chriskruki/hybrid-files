@@ -8,10 +8,10 @@ export default function JobsTable({ jobList, dropdownElems }) {
       <StyledTableCell>{row.name}</StyledTableCell>
       <StyledTableCell>{row.type}</StyledTableCell>
       <StyledTableCell>{row.status}</StyledTableCell>
-      <StyledTableCell>{row.src_path}</StyledTableCell>
-      <StyledTableCell>{row.src_platform}</StyledTableCell>
-      <StyledTableCell>{row.dest_path}</StyledTableCell>
-      <StyledTableCell>{row.dest_platform}</StyledTableCell>
+      <StyledTableCell>{String.raw`${row.src_path}`}</StyledTableCell>
+      <StyledTableCell>{String.raw`${row.src_platform}`}</StyledTableCell>
+      <StyledTableCell>{String.raw`${row.dest_path}`}</StyledTableCell>
+      <StyledTableCell>{String.raw`${row.dest_platform}`}</StyledTableCell>
       <StyledTableCell>
         {new Date(row.date_created).toLocaleString('en-US', { timeZone: 'UTC' })}
       </StyledTableCell>

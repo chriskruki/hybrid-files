@@ -55,30 +55,37 @@ INSERT INTO `file` (job_id, platform_id, name, path, size, date_created, date_mo
     VALUES (9, 18, 'Test File', 'D/File/Path', 1500, '2019-07-07T07:48:07', '2019-07-07T07:48:07', NOW());
 
 INSERT INTO job (name, type, status, src_path, src_platform, date_started, date_finished)
-VALUES ('test', 'local', 'finished', 'D:/Media', 18, '2019-07-07T07:48:07', '2019-07-07T07:48:07');
-
-SELECT LAST_INSERT_ID() INTO @new_job_id;
-
-SELECT @new_job_id;
+VALUES ('test', 'local', 'finished', 'D:/Media', 1, '2019-07-07T07:48:07', '2019-07-07T07:48:07');
 
 DELIMITER $$
 CREATE PROCEDURE insert_file (
     IN in_job_id INT,
     IN in_platform_id INT,
     IN in_group_id INT,
-    IN in_name VARCHAR(30),
-    IN in_path VARCHAR(50),
+    IN in_name VARCHAR(255),
+    IN in_path VARCHAR(255),
+    IN in_extension VARCHAR(255),
     IN in_size INT,
     IN in_date_created TIMESTAMP,
     IN in_date_modified TIMESTAMP
 )
 BEGIN
-    INSERT INTO `file` (job_id, name, path, size, date_created, date_modified, date_ingested)
-        VALUES (in_job_id, in_name, in_path, in_size, in_date_created, in_date_modified, CURRENT_TIMESTAMP());
+    INSERT INTO `file` (name, path, extension, size, date_created, date_modified, date_ingested)
+        VALUES (in_name, in_path, in_extension, in_size, in_date_created, in_date_modified, CURRENT_TIMESTAMP()) ESCAPE '';
+
     SELECT LAST_INSERT_ID() INTO @file_id;
     SELECT @file_id;
+
+    INSERT INTO file_job (file_id, job_id)
+        VALUES (@file_id, in_job_id);
+
+    INSERT INTO file_platform (file_id, platform_id)
+        VALUES (@file_id, in_platform_id);
+
+    INSERT INTO file_group (file_id, group_id)
+        VALUES (@file_id, in_group_id);
 END $$
 
-CALL PROCEDURE insert_file(9, 18, 'Test File', 'D/File/Path', 1500, '2019-07-07T07:48:07', '2019-07-07T07:48:07', NOW())
+CALL insert_file(1, 1, 1, 'Test File', 'D:\\Media\\Photos\\Humans\\Kai Pics', '.jpeg', 1500, '2019-07-07T07:48:07', '2019-07-07T07:48:07');
 
 DROP PROCEDURE insert_file;

@@ -15,6 +15,7 @@ export const sqlBridge = {
           database: payload.database,
           user: payload.username,
           password: payload.password,
+          multipleStatements: true // Dangerous - temporary use!
         })
 
         // https://stackoverflow.com/questions/59478692/date-mismatch-in-database-when-queried-by-node-script
@@ -249,7 +250,7 @@ export const sqlBridge = {
     return GETQueryPromise(query)
   },
   insertJob: async (payload) => {
-    orchestrateFileJob(payload)
+    return orchestrateFileJob(payload)
   },
   runJob: async (payload) => {
     var fileInsertsList = payload.fileList.map((f) => {
@@ -263,6 +264,13 @@ export const sqlBridge = {
       WHERE job_id='${payload.job_id}'
     `
     return DELETEQueryPromise(query)
+  },
+  getFiles: async (payload) => {
+    const query = `
+    SELECT *
+    FROM file;
+    `
+    return GETQueryPromise(query)
   },
 }
 
@@ -375,7 +383,7 @@ const orchestrateFileJob = (payload) => {
   return new Promise((resolve) => {
     var res = {
       success: false,
-      errMsg: '',
+      errMsg: ''
     }
     if (!bridge.connected) {
       res.success = false
@@ -383,34 +391,53 @@ const orchestrateFileJob = (payload) => {
       resolve(res)
     }
     try {
-      // Insert Job
-      bridge.con.query(jobQuery, (err, data) => {
+      // Start Transaction
+      const chainSuccess = []
+      bridge.con.beginTransaction(async (err) => {
         if (err) {
           res.success = false
           res.errMsg = err.message
           resolve(res)
-        } else {
-          res.success = true
         }
-        // Rollback if failed
-        if (!res.success) {
+        // Insert Job
+        const jobRes = await GETQueryPromise(jobQuery)
+        if (!jobRes.success) {
           bridge.con.rollback()
-          resolve(res)
+          resolve(jobRes)
+          return
         }
-      })
+        const job_id = jobRes.data.insertId
 
-      // Insert files
-      payload.fileList.forEach((fileRow) => {
-        bridge.con.query(`
-        SELECT LAST_INSERT_ID INTO @last_row_id;
-        CALL PROCEDURE insert_file(
-          @last_row_id,
-          ${fileRow}
-        )
-    `)
+        var insertQuery = ''
+        payload.fileList.forEach((fileRow) => {
+          insertQuery += `
+            CALL insert_file(
+            ${job_id},
+            ${payload.src_platform},
+            ${payload.job_group},
+            '${fileRow.name}',
+            '${doubleSlash(fileRow.fullPath)}',
+            '${fileRow.extName}',
+            ${fileRow.size},
+            '${sqlDateFormat(fileRow.createdTime)}',
+            '${sqlDateFormat(fileRow.modifiedTime)}'
+          );`
+        })
+
+        // Insert files
+        const filesRes = await PUTQueryPromise(insertQuery)
+        if (!filesRes.success) {
+          console.log(filesRes.errMsg)
+          bridge.con.rollback()
+          resolve(filesRes)
+          return
+        }
+
+        // Commit assuming all success and no returns
+        console.log('committing file inserts!')
+        bridge.con.commit()
+        resolve(filesRes)
       })
-      bridge.con.commit()
-      // bridge.con.rollback()
     } catch (e) {
       res.success = false
       res.errMsg = e.message
@@ -421,4 +448,15 @@ const orchestrateFileJob = (payload) => {
 
 const sqlDateFormat = (dateStr) => {
   return new Date(dateStr).toISOString().slice(0, 19).replace('T', ' ');
+}
+
+function doubleSlash(str) {
+  return str.replace(/(.)(\\)(.)/g, function (match, before, backslash, after) {
+    // Check if the backslash is surrounded by characters
+    if (before.trim().length > 0 && after.trim().length > 0) {
+      return before + '\\\\' + after;
+    } else {
+      return match; // No surrounding characters, return the original match
+    }
+  });
 }

@@ -86,7 +86,7 @@ export default function GroupsPage({ currPage, setCurrPage }) {
             resetGroupHolder()
           } else {
             updateSqlSettings('log', 'Group edit failed', false)
-            setResMsg(`Group edit failed: ${res.errMsg}`)
+            setResMsg(`Group edit failed: ${res.errMsg || ''}`)
           }
         })
         .catch((reason) => {
@@ -112,7 +112,7 @@ export default function GroupsPage({ currPage, setCurrPage }) {
             setModalOpen(false)
             resetGroupHolder()
           } else {
-            setResMsg(`Group creation failed: ${res.errMsg}`)
+            setResMsg(`Group creation failed: ${res.errMsg || ''}`)
             updateSqlSettings('log', 'Group creation failed', false)
           }
         })
@@ -141,7 +141,7 @@ export default function GroupsPage({ currPage, setCurrPage }) {
             resetGroupHolder()
           } else {
             updateSqlSettings('log', 'Group deletion failed', false)
-            setResMsg(`Group deletion failed: ${res.errMsg}`)
+            setResMsg(`Group deletion failed: ${res.errMsg || ''}`)
           }
         })
         .catch((reason) => {

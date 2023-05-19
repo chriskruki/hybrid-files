@@ -90,6 +90,7 @@ export default function JobsPage({ currPage, setCurrPage }) {
 
   // Fetch all platforms and store in jobList
   const getJobs = (doLog) => {
+    console.log('getting jobs')
     const payload = {}
     try {
       return window.api
@@ -118,6 +119,7 @@ export default function JobsPage({ currPage, setCurrPage }) {
 
   // Insert new job - import files
   const insertJob = (e) => {
+    console.log('inserting job')
     e.preventDefault()
     const payload = jobHolder
     try {
@@ -131,7 +133,7 @@ export default function JobsPage({ currPage, setCurrPage }) {
             resetJobHolder()
           } else {
             updateSqlSettings('log', 'Job creation failed', false)
-            setResMsg(`Job creation failed: ${res.errMsg}`)
+            setResMsg(`Job creation failed: ${res.errMsg || ''}`)
           }
         })
         .catch((reason) => {
@@ -158,7 +160,7 @@ export default function JobsPage({ currPage, setCurrPage }) {
             resetJobHolder()
           } else {
             updateSqlSettings('log', 'Job deletion failed', false)
-            setResMsg(`Job deletion failed: ${res.errMsg}`)
+            setResMsg(`Job deletion failed: ${res.errMsg || ''}`)
           }
         })
         .catch((reason) => {

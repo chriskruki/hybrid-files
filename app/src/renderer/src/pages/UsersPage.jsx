@@ -87,7 +87,7 @@ export default function UsersPage({ currPage, setCurrPage }) {
             resetUserHolder()
           } else {
             updateSqlSettings('log', 'User edit failed', false)
-            setResMsg(`User edit failed: ${res.errMsg}`)
+            setResMsg(`User edit failed: ${res.errMsg || ''}`)
           }
         })
         .catch((reason) => {
@@ -114,7 +114,7 @@ export default function UsersPage({ currPage, setCurrPage }) {
             resetUserHolder()
           } else {
             updateSqlSettings('log', 'User creation failed', false)
-            setResMsg(`User creation failed: ${res.errMsg}`)
+            setResMsg(`User creation failed: ${res.errMsg || ''}`)
           }
         })
         .catch((reason) => {
@@ -141,7 +141,7 @@ export default function UsersPage({ currPage, setCurrPage }) {
             resetUserHolder()
           } else {
             updateSqlSettings('log', 'User deletion failed', false)
-            setResMsg(`User deletion failed: ${res.errMsg}`)
+            setResMsg(`User deletion failed: ${res.errMsg || ''}`)
           }
         })
         .catch((reason) => {

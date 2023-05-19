@@ -1,11 +1,10 @@
 import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join, extname, relative } from 'path'
-// import { os } from 'os'
 import { readDir, readdirSync, statSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { sqlBridge } from './sqlBridge'
+import { installExtension, REACT_DEVELOPER_TOOLS } from "electron-extension-installer";
 import icon from '../../resources/icon.png?asset'
-
 
 function createWindow() {
   // Create the browser window.
@@ -45,12 +44,12 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
   electronApp.setAppUserModelId('com.electron')
-  // Windows specific - load React Dev Tools
-  // if (is.dev) {
-  //   const reactDevToolsPath = join(process.env.USERPROFILE, '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\fmkadmapgofadopljbjfkapdkoienihi\\4.27.6_0');
-  //   await session.defaultSession.loadExtension(reactDevToolsPath)
-  // }
 
+  await installExtension(REACT_DEVELOPER_TOOLS, {
+    loadExtensionOptions: {
+      allowFileAccess: true,
+    },
+  });
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
@@ -107,7 +106,6 @@ function listFiles(baseDir, directory, fileTypes, recursive = false) {
     if (fStats.isDirectory() && recursive) {
       files.push(...listFiles(baseDir, fullPath, fileTypes, recursive))
     } else {
-      console.log(extname(fName))
       // Validate filetypes
       if (fileTypes.includes(fExt)) {
         files.push({
