@@ -266,11 +266,30 @@ export const sqlBridge = {
     return DELETEQueryPromise(query)
   },
   getFiles: async (payload) => {
+    const where = whereFilters(payload.tableConfig)
+    const limits = paginationLimits(payload.tableConfig)
     const query = `
     SELECT *
-    FROM file;
+    FROM file
+    ${where}
+    ${limits};
     `
-    return GETQueryPromise(query)
+    const totalFilesRes = await GETQueryPromise(`
+      SELECT COUNT(*) as rowCount
+      FROM file
+      ${where}
+    `)
+    const rowCount = totalFilesRes.data[0]['rowCount']
+    const filesRes = await GETQueryPromise(query)
+    return new Promise((resolve) => {
+      resolve({
+        success: true,
+        data: {
+          totalRows: rowCount,
+          fileList: filesRes.data
+        }
+      })
+    })
   },
 }
 
@@ -374,7 +393,7 @@ const orchestrateFileJob = (payload) => {
     '${payload.name}', 
     '${payload.type}', 
     '${payload.status}', 
-    '${payload.src_path}', 
+    '${doubleSlash(payload.src_path)}', 
     '${payload.src_platform}', 
     '${sqlDateFormat(payload.date_started)}', 
     '${sqlDateFormat(payload.date_finished)}'
@@ -450,7 +469,7 @@ const sqlDateFormat = (dateStr) => {
   return new Date(dateStr).toISOString().slice(0, 19).replace('T', ' ');
 }
 
-function doubleSlash(str) {
+const doubleSlash = (str) => {
   return str.replace(/(.)(\\)(.)/g, function (match, before, backslash, after) {
     // Check if the backslash is surrounded by characters
     if (before.trim().length > 0 && after.trim().length > 0) {
@@ -459,4 +478,27 @@ function doubleSlash(str) {
       return match; // No surrounding characters, return the original match
     }
   });
+}
+
+const whereFilters = (filters) => {
+  var atleastOne = false
+  var where = 'WHERE '
+  if (filters.filterName !== '') {
+    where += `${atleastOne ? ' AND ' : ''} name LIKE '%${filters.filterName}%'`
+    atleastOne = true
+  }
+  if (filters.filterExtension !== '') {
+    where += `${atleastOne ? ' AND ' : ''} extension LIKE '%${filters.filterExtension}%'`
+    atleastOne = true
+  }
+  // Return blank if no filters given
+  return atleastOne ? where : ''
+}
+
+const paginationLimits = (c) => {
+  const limit = c.rows
+  const offset = (c.page - 1) * c.rows
+  // Page 1, 20 rows, offset = (1 - 0) * 20 = 0
+  // Page 2, 20 rows, offset (2 - 1) * 20 = 20
+  return `LIMIT ${limit} OFFSET ${offset}`
 }

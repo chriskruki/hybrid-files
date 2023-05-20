@@ -58,15 +58,15 @@ $ npm run build:linux
 | # | Description | Statisfying Area |
 | ----------- | ----------- | ------ |
 | 1 | Print/display records from your database/tables | All Pages |
-| 2 | Query for data/results with various parameters/filters | Not started |
+| 2 | Query for data/results with various parameters/filters | File Filters |
 | 3 | Create a new record | All pages |
 | 4 | Delete records (soft delete function would be ideal) | All Pages |
 | 5 | Update records | All Pages |
-| 6 | Make use of transactions (commit & rollback) | Not started |
-| 7 | Generate reports that can be exported (excel or csv format) | Not started |
-| 8 | One query must perform an aggregation/group-by clause | Not started |
-| 9 | One query must contain a subquery | Not started |
-| 10 | Two queries must involve joins across at least 3 tables | Not started |
+| 6 | Make use of transactions (commit & rollback) | Insert File |
+| 7 | Generate reports that can be exported (excel or csv format) | N/A |
+| 8 | One query must perform an aggregation/group-by clause | User Groups |
+| 9 | One query must contain a subquery | N/A |
+| 10 | Two queries must involve joins across at least 3 tables | Views |
 | 11 | Enforce referential integrality (PK/FK Constraints) | Satisfied |
 | 12 | Include Database Views, Indexes | User Groups View |
 | 13 | Use at least 5 entities | Satisfied |

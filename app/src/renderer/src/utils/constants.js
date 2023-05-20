@@ -70,3 +70,14 @@ export const INIT_JOB = {
   fileList: []
 }
 
+
+export const INIT_TABLE_CONFIG = {
+  page: 1,
+  rows: 20,
+  totalRows: -1,
+  isChanged: false,
+  filterName: '',
+  filterExtension: '',
+  date_created_start: '',
+  date_created_end: '',
+}

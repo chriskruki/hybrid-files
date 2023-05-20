@@ -89,3 +89,7 @@ END $$
 CALL insert_file(1, 1, 1, 'Test File', 'D:\\Media\\Photos\\Humans\\Kai Pics', '.jpeg', 1500, '2019-07-07T07:48:07', '2019-07-07T07:48:07');
 
 DROP PROCEDURE insert_file;
+
+CREATE VIEW file_meta AS
+    SELECT file_id, name, path, extension, size, date_created, date_modified, date_ingested
+    FROM file;
