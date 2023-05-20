@@ -14,7 +14,7 @@ import GroupsPage from './pages/GroupsPage'
 import GradientLayout from './layouts/GradientLayout'
 
 function App() {
-  const [currPage, setCurrPage] = useState(PAGES.JOBS)
+  const [currPage, setCurrPage] = useState(PAGES.LOGIN)
   const darkTheme = createTheme({
     palette: {
       mode: 'dark'
