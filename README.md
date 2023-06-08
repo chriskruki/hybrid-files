@@ -1,6 +1,8 @@
 # hybrid-files
 A hybrid file storage solution for maintaining files locally and on the cloud.
 
+[Alpha Demo Video (May 19, 2023)](https://youtu.be/JdJnR0ahJ-Y)
+
 ## Project Setup
 
 ### Create / seed database
